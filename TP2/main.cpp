@@ -10,7 +10,17 @@ protected:
 public :
     vec2();
     vec2(const double&, const double&);
-    double operator[](int);
+    double& operator[](int index)
+    {
+        if ((index > 2) || (index < 0)){
+            std::cout << "Index out of range for vec2 type" << std::endl;
+            return a;
+        } else if (index == 0) {
+            return a;
+        } else {
+            return b;
+    }
+    };
 };
 
 vec2::vec2(){
@@ -21,17 +31,6 @@ vec2::vec2(){
 vec2::vec2(const double& x, const double& y){
     a = x;
     b = y;
-}
-
-double vec2::operator[](int index){
-    if ((index > 2) || (index < 0)){
-        std::cout << "Index out of range for vec2 type" << std::endl;
-        return -1;
-    } else if (index == 0) {
-        return a;
-    } else {
-        return b;
-    }
 }
 
 
