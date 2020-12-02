@@ -1,3 +1,10 @@
+
+
+//////////////////////
+// STOP V4 à 5:04   //
+//////////////////////
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -55,6 +62,20 @@ protected:
 public :
     vec3(double x = 0.0, double y= 0.0, double z= 0.0) : x(x), y(y), z(z){}
     vec3(const vec2& v, double z) : x(v.x), y(v.y), z(z){}
+
+    inline vec3 Scale(const vec3& p){return vec3(x*p.x, y*p.y, y*p.z);}
+    inline double operator*(const vec3& p) {return x*p.x + y*p.y + z*p.z;}
+    inline vec3 operator+ (const vec3& p) {return vec3(x+p.x, y+p.y, z+p.z);}
+    inline vec3 operator- (const vec3& p) {return vec3(x-p.x, y-p.y, z-p.z);}
+
+    inline const double operator[](int i) const {
+        if (i==0) return x; else if (i==1) return y ; else return z;
+    }
+
+    inline double& operator[](int i) {
+        if (i==0) return x; else if (i==1) return y ; else return z;
+    }
+
 };
 
 
@@ -259,6 +280,8 @@ public:
     double AverageSlope(int i, int j) const { return 0.0; };   //TODO
 
     vec3 Vertex(int i, int j) const { return vec3(Grid2::Vertex(i,j), Height(i,j)));}
+    vec3 Normal(int i, int j) const {}
+    
     //TODO
 
 };
