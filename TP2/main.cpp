@@ -369,7 +369,18 @@ QImage Export() const { QImage image(nx, ny, QImage::Format_ARGB32); // Relief s
 
 
 
+/* from webex le 2/12
 
+de Casanova Delfeil à Tous mes contacts:
+J'ai du mal à comprendre comment faire les variations de couleurs en fonctions des valeurs de gradient | laplacien...
+
+de eric galin à Tous mes contacts:
+C'est une fonction de transfert
+Soit f une fonction dont l'image va dans [0,1]16:35
+On peut faire la couleur par introduction d'une fonction de transfert (de type palette) qui génère la couleur à partir du résultat
+Exemple : Col Shade(double t) { return Col(t,0,1.0-t); }16:37
+Col passe du bleu au rouge (si me trompe pas) en fonction de t...
+*/
 
 
 
