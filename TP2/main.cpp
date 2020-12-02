@@ -2,36 +2,60 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 class vec2
 {
 protected:
-    double a,b;
+    double x,y;
 public :
-    vec2();
-    vec2(const double&, const double&);
-    double& operator[](int index)
+    vec2():x(0.0), y(0.0){}
+    vec2(double x, double y) : x(x), y(y){}
+    inline double& operator[](int index)
     {
         if ((index > 2) || (index < 0)){
             std::cout << "Index out of range for vec2 type" << std::endl;
-            return a;
+            return x;
         } else if (index == 0) {
-            return a;
+            return x;
         } else {
-            return b;
+            return y;
+        }
     }
-    };
+
+    inline const double operator[](int index) const
+    {
+        if ((index > 2) || (index < 0)){
+            std::cout << "Index out of range for vec2 type" << std::endl;
+            return x;
+        } else if (index == 0) {
+            return x;
+        } else {
+            return y;
+        }
+    }
+
+
+    inline vec2 Scale(const vec2& p){return vec2(x*p.x, y*p.y);}
+    inline double operator*(const vec2& p) {return x*p.x + y*p.y;}
+    inline vec2 operator+ (const vec2& p) {return vec2(x+p.x, y+p.y);}
+    inline vec2 operator- (const vec2& p) {return vec2(x-p.x, y-p.y);}
+
+
+
+    vec2 operator-(){ return vec2(-x, -y);}
+
+    friend class vec3;
 };
 
-vec2::vec2(){
-    a = 0.0;
-    b = 0.0;
-}
-
-vec2::vec2(const double& x, const double& y){
-    a = x;
-    b = y;
-}
+class vec3
+{
+protected:
+    double x,y,z;
+public :
+    vec3(double x = 0.0, double y= 0.0, double z= 0.0) : x(x), y(y), z(z){}
+    vec3(const vec2& v, double z) : x(v.x), y(v.y), z(z){}
+};
 
 
 class Box2 
@@ -41,9 +65,11 @@ protected:
 
 public:
     Box2(const vec2&, const vec2&);
+    Box2(const double&, const double&);
     bool Inside(const vec2&) const;
     bool Intersect(const Box2&) const;
-
+public:
+    static const Box2 Empty;
 };
 
 Box2::Box2(const vec2& u, const vec2& v){
@@ -51,12 +77,28 @@ Box2::Box2(const vec2& u, const vec2& v){
     b = v;
 }
 
+Box2::Box2(const double& x, const double& y){
+    a = -vec2(x/2.0, y/2.0);
+    b = vec2(x/2.0, y/2.0);
+}
+
 bool Box2::Inside(const vec2& v) const {
-    if ((v[0] > b[0]) || (v[0] < a[0]) || (v[1] < b[1]) || (v[1] > a[1])){
+    if ((v[0] > b[0]) || (v[0] < a[0]) || (v[1] > b[1]) || (v[1] < a[1])){
         return false;
     }
     return true;
 }
+
+bool Box2::Intersect(const Box2& box) const
+{
+    if ((a[0] >= box.b[0]) || (a[1] >= box.b[1]) || (b[0] <= box.a[0]) || (b[1] <= box.a[1])){
+        return false;
+    } else {
+        return true;
+    }
+}
+
+const Box2 Box2::Empty(vec2(0.0, 0.0), vec2(0.0, 0.0));
 
 
 class Grid2 : public Box2
@@ -79,7 +121,7 @@ public:
     }
     bool Border(int i, int j) const
     {
-        return ((i >= 0) || (i == nx - 1) || (j == 0) || (j < ny));
+        return ((i == 0) || (i == nx - 1) || (j == 0) || (j == ny-1));
     }
     
     int Index(int i, int j) const {return i+j*nx;}
@@ -104,11 +146,19 @@ public:
         field.resize(nx*ny,0.0);
     }
 
+    vec2 Gradient(int, int) const;
+    double Laplacian(int, int) const;
+
     const double at(int i, int j) const
     {
-        return;     //TODO
+        return field[Index(i,j)];     
     }
-}
+
+    double& at(int i, int j)
+    {
+        return field[Index(i,j)];     
+    }
+};
 
 
 
@@ -117,9 +167,9 @@ public:
 
 
 
-Vec2 Gradient(int i, int j) const // df/dx,df/dy ~ ( (f(x+e,y)-f(x-e,y))/2e , ... ) 
+vec2 SF2::Gradient(int i, int j) const // df/dx,df/dy ~ ( (f(x+e,y)-f(x-e,y))/2e , ... ) 
 { 
-    Vec2 n; 
+    vec2 n; 
     
     // Gradient along x axis 
     if (i == 0)
@@ -161,7 +211,7 @@ Vec2 Gradient(int i, int j) const // df/dx,df/dy ~ ( (f(x+e,y)-f(x-e,y))/2e , ..
 
 
 
-double Laplacian(int i, int j) const //d2f / dx2 ~ (f(x+e)-2f(x)+f(x+e))/(e^2) 
+double SF2::Laplacian(int i, int j) const //d2f / dx2 ~ (f(x+e)-2f(x)+f(x+e))/(e^2) 
 { 
     double laplacian = 0.0; 
     
@@ -204,12 +254,12 @@ public:
     HeighField(const SF2& s) :SF2(s) { }
 
     double Height(int i, int j) const { return at(i,j); } // Nouveau nom
-    double Slope(int i, int j) const { Vec2 g = Gradient(i, j); return sqrt(g*g); }
+    double Slope(int i, int j) const { vec2 g = Gradient(i, j); return sqrt(g*g); }
 
-    double AverageSlope(int i, int j) const { return 0.0; };
+    double AverageSlope(int i, int j) const { return 0.0; };   //TODO
 
-    Vec3 Vertex(int i, int j) const { return Vec3(Grid2::Vertex(i,j), Height(i,j)));}
-    TODO
+    vec3 Vertex(int i, int j) const { return vec3(Grid2::Vertex(i,j), Height(i,j)));}
+    //TODO
 
 };
 
