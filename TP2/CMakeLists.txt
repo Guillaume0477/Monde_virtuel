@@ -8,7 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
-
 find_package(Qt5 COMPONENTS Widgets OpenGL REQUIRED)
 find_package(OpenGL REQUIRED)
 

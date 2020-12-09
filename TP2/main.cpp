@@ -16,7 +16,7 @@ public:
     explicit vec2(double x = 0.0, double y = 0.0) : x(x), y(y) {}
     inline vec2 operator+(const vec2 &p) { return vec2(x + p.x, y + p.y); }
     inline vec2 operator-(const vec2 &p) { return vec2(x - p.x, y - p.y); }
-    vec2 operator-() { return vec2(-x, -y); }
+    inline vec2 operator-() { return vec2(-x, -y); }
 
     inline double operator*(const vec2 &p) { return x * p.x + y * p.y; }
 
@@ -83,16 +83,17 @@ public:
 
 
     //inline friend vec3 operator/(double a, const vec3 &p) { return vec3(p.x/ a ,p.y/a , p.z/a); }
-    inline friend vec3 operator*(const vec3 &p, double a) { return vec3(a * p.x, a * p.y, a * p.z); }
+    inline friend vec3 operator*(double a, const vec3 &p) { return vec3(a * p.x, a * p.y, a * p.z); }
 
 
     inline double Length() const
     {
         return sqrt(x * x + y * y + z * z);
     }
+
     inline vec3 Normalized() const
     {
-        return (1.0/ Length())*(*this)  ;
+        return (1.0/ Length())* (*this);
     }
 
     inline vec3 Scale(const vec3 &p) { return vec3(x * p.x, y * p.y, y * p.z); }
@@ -195,7 +196,7 @@ public:
 
     int Index(int i, int j) const { return i + j * nx; }
 
-    vec2 Vertex(int i, int j)
+    vec2 Vertex(int i, int j) const
     {
         double u = double(i) / (nx - 1);
         double v = double(j) / (ny - 1);
@@ -302,10 +303,10 @@ class HeighField : public SF2
 protected:
 public:
     HeighField(const SF2 &s) : SF2(s) {}
-    HeighField(const QImage &image, const Box2 &, double, double) /*:Grid2(box, image.width(),image.height()){*/
-    {
+    //HeighField(const QImage &image, const Box2 &, double, double) /*:Grid2(box, image.width(),image.height()){*/
+    //{
         //et interpoler entre les deux z
-    }
+    //}
 
     double Height(int i, int j) const { return at(i, j); } // Nouveau nom
     double Slope(int i, int j) const
@@ -331,6 +332,12 @@ public:
     LayeredField(const SF2 &bedrock, const SF2 &sand) : Grid2(bedrock), bedrock(bedrock), sand(sand) {}
 };
 
+
+
+
+int main (int argc, char *argv[]){
+    return 0;
+}
 
 
 
