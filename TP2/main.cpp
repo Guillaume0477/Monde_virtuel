@@ -228,6 +228,8 @@ public:
     {
         return field[Index(i, j)];
     }
+
+
 };
 
 vec2 SF2::Gradient(int i, int j) const // df/dx,df/dy ~ ( (f(x+e,y)-f(x-e,y))/2e , ... )
@@ -316,7 +318,7 @@ public:
         //Remplissage des hauteurs
         for (int x = 0; x < nx; x ++){
             for (int y = 0; y < ny ; y++){
-                field[x*ny+y] = ((qRed(image.pixel(x,y)))/255.0 * normFact);
+                field[Index(x,y)] = ((qRed(image.pixel(x,y)))/255.0 * normFact);
                 // std::cout << field.back() << std::endl;
             }
         }
@@ -334,6 +336,31 @@ public:
 
     vec3 Vertex(int i, int j) const { return vec3(Grid2::Vertex(i, j), Height(i, j)); }
     vec3 Normal(int i, int j) const { return vec3(-Gradient(i, j), 1.0).Normalized(); }
+
+    QImage Export(SF2 mapToExport) const
+    {
+        QImage image(nx,ny, QImage::Format_ARGB32);
+
+        const vec3 lightdir = vec3(2.0, 1.0, 4.0).Normalized();
+
+        for (int i=0; i <nx; i++)
+        {
+            for (int j=0; j <ny; j++)
+            {
+                vec3 n = Normal(i,j);
+                double d =n*lightdir;
+                d=(1.0+d)/2.0;
+                d *= d;
+                int mapVal = (mapToExport.at(i,j)/10.0*255) *d;
+                image.setPixel(i,j,qRgb(mapVal, mapVal, mapVal));
+
+                //std::cout << image.pixel(i,j) << std::endl;
+            }
+        }
+
+        return image;
+    }
+
 };
 
 class LayeredField : public Grid2
@@ -362,36 +389,16 @@ int main (int argc, char *argv[]){
     QImage im;
     im.load("../1000iterations.png");
 
-    HeighField(im, Box2(vec2(1,0), vec2(0,1)), im.width(), im.height());
+    HeighField hf = HeighField(im, Box2(vec2(1,0), vec2(0,1)), im.width(), im.height());
+
+    QImage myIm = hf.Export(hf);
+
+    myIm.save("pilou.png");
 
     return 0;
 }
 
 
-
-
-/*
-
-QImage Export() const
-{
-    QImage image(nx,ny, QImage::Format_ARGB32);
-
-    const vec3 lightdir = vec3(2.0, 1.0, 4.0).Normalized;
-
-    for (int i=0, i <nx; i++)
-    {
-        for (int i=0, i <ny; j++)
-        {
-            vec3 = Normal(i,j);
-            double d =n*lightdir;
-            d=(1.0+d)/2.0;
-            d *= d;
-            image.setPixel(i,j,...)
-        }
-    }
-}
-
-*/
 
 // SF2 SlopeMap() const
 // {
