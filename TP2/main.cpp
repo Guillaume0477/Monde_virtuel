@@ -388,6 +388,7 @@ QImage HeighField::Export(SF2 mapToExport, bool vis = false) const
     {
         for (int j=0; j <ny; j++)
         {
+            mapToExport.UpdateMinMax();
             int mapVal = ((mapToExport.at(i,j)-mapToExport.min())/(mapToExport.max()-mapToExport.min())*255);
             if (vis){
                 vec3 n = Normal(i,j);
