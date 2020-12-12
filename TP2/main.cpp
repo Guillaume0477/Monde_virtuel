@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-//#include <QImage>
+#include <QImage>
 
 class vec2
 {
@@ -303,10 +303,25 @@ class HeighField : public SF2
 protected:
 public:
     HeighField(const SF2 &s) : SF2(s) {}
-    //HeighField(const QImage &image, const Box2 &, double, double) /*:Grid2(box, image.width(),image.height()){*/
-    //{
+    HeighField(const QImage &image, const Box2 &box, double nx, double ny) /*:Grid2(box, image.width(),image.height()){*/
+    {
         //et interpoler entre les deux z
-    //}
+        
+        //Initialisation
+        Grid2 grid = Grid2(box, nx, ny);
+        *this = SF2(grid);
+
+        float normFact = 10.0;
+
+        //Remplissage des hauteurs
+        for (int x = 0; x < nx; x ++){
+            for (int y = 0; y < ny ; y++){
+                field[x*ny+y] = ((qRed(image.pixel(x,y)))/255.0 * normFact);
+                // std::cout << field.back() << std::endl;
+            }
+        }
+        //std::cout << field.size() << ' ' << nx*ny << ' ' << nx << ' ' << ny << std::endl;
+    }
 
     double Height(int i, int j) const { return at(i, j); } // Nouveau nom
     double Slope(int i, int j) const
@@ -336,6 +351,19 @@ public:
 
 
 int main (int argc, char *argv[]){
+
+    vec3 pilou = vec3(0.0, 1.0, 2.0);
+
+    vec3 normalized = pilou.Normalized();
+
+    //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
+
+
+    QImage im;
+    im.load("../1000iterations.png");
+
+    HeighField(im, Box2(vec2(1,0), vec2(0,1)), im.width(), im.height());
+
     return 0;
 }
 
