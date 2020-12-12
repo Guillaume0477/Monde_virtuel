@@ -261,6 +261,8 @@ public:
 
     void Smooth();
     void Blur();
+    void Normalize();
+    void Clamp();
 
 };
 
@@ -416,6 +418,15 @@ void SF2::Blur(){
     field = blured;
 }
 
+void SF2::Normalize(){
+    UpdateMinMax();
+
+    for (int k = 0; k < field.size(); k++){
+        field[k] = (field[k] - minVal)/(maxVal - minVal);
+    }
+
+}
+
 /******************************************
 *           Classe HeighField2            *
 ******************************************/
@@ -470,12 +481,12 @@ QImage HeighField::Export(SF2 mapToExport, bool vis = false) const
     QImage image(nx,ny, QImage::Format_ARGB32);
 
     const vec3 lightdir = vec3(2.0, 1.0, 4.0).Normalized();
-    mapToExport.UpdateMinMax();
+    mapToExport.Normalize();
     for (int i=0; i <nx; i++)
     {
         for (int j=0; j <ny; j++)
         {
-            int mapVal = ((mapToExport.at(i,j)-mapToExport.min())/(mapToExport.max()-mapToExport.min())*255);
+            int mapVal = (mapToExport.at(i,j)*255);
             if (vis){
                 vec3 n = Normal(i,j);
                 double d =n*lightdir;
@@ -540,12 +551,18 @@ public:
 
 int main (int argc, char *argv[]){
 
+
+
+
+
+    /*******************
+    //Batterie de tests
+    ********************/
     vec3 pilou = vec3(0.0, 1.0, 2.0);
 
     vec3 normalized = pilou.Normalized();
 
     //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
-
 
     QImage im;
     im.load("../1000iterations.png");
