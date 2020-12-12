@@ -355,7 +355,7 @@ public:
     vec3 Vertex(int i, int j) const { return vec3(Grid2::Vertex(i, j), Height(i, j)); }
     vec3 Normal(int i, int j) const { return vec3(-Gradient(i, j), 1.0).Normalized(); }
 
-    QImage Export(SF2 mapToExport) const
+    QImage Export(SF2 mapToExport, bool vis = false) const
     {
         QImage image(nx,ny, QImage::Format_ARGB32);
 
@@ -365,15 +365,17 @@ public:
         {
             for (int j=0; j <ny; j++)
             {
-                vec3 n = Normal(i,j);
-                double d =n*lightdir;
-                d=(1.0+d)/2.0;
-                d *= d;
+                int mapVal = ((mapToExport.at(i,j)-mapToExport.min())/(mapToExport.max()-mapToExport.min())*255);
+                if (vis){
+                    vec3 n = Normal(i,j);
+                    double d =n*lightdir;
+                    d=(1.0+d)/2.0;
+                    d *= d;
+                    mapVal *= d;
+                }
 
-                int mapVal = ((mapToExport.at(i,j)-mapToExport.min())/(mapToExport.max()-mapToExport.min())*255) *d;
                 image.setPixel(i,j,qRgb(mapVal, mapVal, mapVal));
 
-                //std::cout << image.pixel(i,j) << std::endl;
             }
         }
 
@@ -409,9 +411,11 @@ int main (int argc, char *argv[]){
     im.load("../1000iterations.png");
 
     HeighField hf = HeighField(im, Box2(vec2(1,0), vec2(0,1)), im.width(), im.height());
-    QImage myIm = hf.Export(hf);
+    QImage myIm = hf.Export(hf, true);
+    QImage myImMap = hf.Export(hf);
 
     myIm.save("pilou.png");
+    myImMap.save("pilouTrue.png");
 
     return 0;
 }
