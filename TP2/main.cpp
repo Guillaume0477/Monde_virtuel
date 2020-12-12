@@ -698,15 +698,41 @@ public:
 };
 
 
+
+void Compute_params( HeighField hf, QString s){
+
+    SF2 GRAD = hf.GradientNorm();
+    SF2 LAP = hf.LaplacianMap();
+    SF2 SLOPE = hf.SlopeMap();
+    SF2 AVSLOPE = hf.AVGSlopeMap();
+
+    QImage hauteur_phong = hf.Shade(hf);
+    QImage hauteur = hf.Export(hf);
+    QImage gradient = hf.Export(GRAD);
+    QImage laplacian = hf.Export(LAP);
+    QImage slope = hf.Export(SLOPE);
+    QImage avslope = hf.Export(AVSLOPE);
+
+    //std::cout <<" hauteur_phong "<<s<< std::endl;
+    hauteur_phong.save("Images/hauteur_phong"+s+".png");
+    //std::cout <<" hauteur "<<s<< std::endl;
+    hauteur.save("Images/hauteur"+s+".png");
+    //std::cout <<" gradient "<<s<< std::endl;
+    gradient.save("Images/gradient"+s+".png");
+    //std::cout <<" laplacian "<<s<< std::endl;
+    laplacian.save("Images/lapla"+s+".png");
+    //std::cout <<" slope "<<s<< std::endl;
+    slope.save("Images/slope"+s+".png");
+    //std::cout <<" avslope "<<s<< std::endl;
+    avslope.save("Images/avslope"+s+".png");
+}
+
+
 /******************************************
 *             Focntion main               *
 ******************************************/
 
 int main (int argc, char *argv[]){
-
-
-
-
 
     /*******************
     //Batterie de tests
@@ -718,14 +744,17 @@ int main (int argc, char *argv[]){
     //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
 
     QImage im;
-    im.load("../1000iterations.png");
+    im.load("heightmap3.jpeg");
 
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
-    SF2 GN = hf.GradientNorm();
     
-    //hf.Blur();
+    Compute_params(hf, "");
 
-    //hf.Clamp(4, 7);
+    hf.Clamp(4, 7);
+    Compute_params(hf, "_Clamp");
+
+    // hf.Smooth();
+    // Compute_params(hf, "_Smooth");
 
     hf.ExportOBJ("Hf.obj");
 
@@ -740,6 +769,10 @@ int main (int argc, char *argv[]){
 
     myFile << vec3(0.0, 1.0, 12.0);
     
+
+    // hf.Blur();
+    // Compute_params(hf, "_Blur");
+
 
     return 0;
 }
