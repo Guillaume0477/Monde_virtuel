@@ -259,6 +259,9 @@ public:
 
     double getConv(int, int, float, float, float);
 
+    SF2 GradientNorm();
+    SF2 LaplacianMap();
+
     void Smooth();
     void Blur();
     void Normalize();
@@ -388,6 +391,32 @@ double SF2::getConv(int i, int j, float mid, float side, float diag){
     return value;
 }
 
+SF2 SF2::GradientNorm(){
+    SF2 gradNorm = SF2(Grid2(*this));
+
+    for (int i = 0; i < nx; i++){
+        for (int j = 0; j < ny; j++){
+            vec2 grad = Gradient(i,j);
+            gradNorm.at(i,j) = sqrt(grad*grad);
+        }
+    }
+
+    return gradNorm;
+}
+
+SF2 SF2::LaplacianMap(){
+    SF2 LaplMap = SF2(Grid2(*this));
+
+    for (int i = 0; i < nx; i++){
+        for (int j = 0; j < ny; j++){
+            LaplMap.at(i,j) = Laplacian(i,j);
+        }
+    }
+
+    return LaplMap;
+}
+
+
 void SF2::Smooth(){
     std::vector<double> smoothed;
     smoothed.resize(nx*ny);
@@ -485,8 +514,7 @@ public:
     
 
     QImage Export(SF2, bool) const;
-    SF2 GradientNorm();
-    SF2 LaplacianMap();
+
 };
 
 QImage HeighField::Export(SF2 mapToExport, bool vis = false) const
@@ -517,30 +545,6 @@ QImage HeighField::Export(SF2 mapToExport, bool vis = false) const
 
 }
 
-SF2 HeighField::GradientNorm(){
-    SF2 gradNorm = SF2(Grid2(*this));
-
-    for (int i = 0; i < nx; i++){
-        for (int j = 0; j < ny; j++){
-            vec2 grad = Gradient(i,j);
-            gradNorm.at(i,j) = sqrt(grad*grad);
-        }
-    }
-
-    return gradNorm;
-}
-
-SF2 HeighField::LaplacianMap(){
-    SF2 LaplMap = SF2(Grid2(*this));
-
-    for (int i = 0; i < nx; i++){
-        for (int j = 0; j < ny; j++){
-            LaplMap.at(i,j) = Laplacian(i,j);
-        }
-    }
-
-    return LaplMap;
-}
 
 /******************************************
 *          Classe LayeredField            *
