@@ -526,6 +526,7 @@ public:
 
     //Exportation sous format d'image ! 
     QImage Export(SF2, bool) const;
+    QImage Shade(SF2 mapToExport) const {return Export(mapToExport, true)};
 
 };
 
