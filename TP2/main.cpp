@@ -7,6 +7,10 @@
 #include <QImage>
 #include <algorithm>
 
+
+/******************************************
+*               Classe vec2               *
+******************************************/
 class vec2
 {
 protected:
@@ -70,6 +74,10 @@ public:
     friend class vec3;
 };
 
+
+/******************************************
+*               Classe vec3               *
+******************************************/
 class vec3
 {
 protected:
@@ -119,6 +127,10 @@ public:
     }
 };
 
+
+/******************************************
+*               Classe Box2               *
+******************************************/
 class Box2
 {
 protected:
@@ -133,16 +145,6 @@ public:
 public:
     static const Box2 Empty;
 };
-
-// Box2::Box2(const vec2& u, const vec2& v){
-//     a = u;
-//     b = v;
-// }
-
-// Box2::Box2(const double& x, const double& y){
-//     a = -vec2(x/2.0, y/2.0);
-//     b = vec2(x/2.0, y/2.0);
-// }
 
 bool Box2::Inside(const vec2 &v) const
 {
@@ -170,6 +172,11 @@ const Box2 Box2::Empty(vec2(0.0, 0.0), vec2(0.0, 0.0));
 Box2::Box2(const vec2 &a, const vec2 &b) : a(a), b(b)
 {
 }
+
+
+/******************************************
+*               Classe Grid2              *
+******************************************/
 
 class Grid2 : public Box2
 {
@@ -205,6 +212,10 @@ public:
     }
 };
 
+
+/******************************************
+*               Classe SF2                *
+******************************************/
 class SF2 : public Grid2
 {
 protected:
@@ -316,6 +327,11 @@ double SF2::Laplacian(int i, int j) const //d2f / dx2 ~ (f(x+e)-2f(x)+f(x+e))/(e
     return laplacian;
 }
 
+
+
+/******************************************
+*           Classe HeighField2            *
+******************************************/
 class HeighField : public SF2
 {
 protected:
@@ -355,34 +371,68 @@ public:
     vec3 Vertex(int i, int j) const { return vec3(Grid2::Vertex(i, j), Height(i, j)); }
     vec3 Normal(int i, int j) const { return vec3(-Gradient(i, j), 1.0).Normalized(); }
 
-    QImage Export(SF2 mapToExport, bool vis = false) const
+    
+
+    QImage Export(SF2, bool) const;
+    SF2 GradientNorm();
+    SF2 LaplacianMap();
+};
+
+QImage HeighField::Export(SF2 mapToExport, bool vis = false) const
+{
+    QImage image(nx,ny, QImage::Format_ARGB32);
+
+    const vec3 lightdir = vec3(2.0, 1.0, 4.0).Normalized();
+
+    for (int i=0; i <nx; i++)
     {
-        QImage image(nx,ny, QImage::Format_ARGB32);
-
-        const vec3 lightdir = vec3(2.0, 1.0, 4.0).Normalized();
-
-        for (int i=0; i <nx; i++)
+        for (int j=0; j <ny; j++)
         {
-            for (int j=0; j <ny; j++)
-            {
-                int mapVal = ((mapToExport.at(i,j)-mapToExport.min())/(mapToExport.max()-mapToExport.min())*255);
-                if (vis){
-                    vec3 n = Normal(i,j);
-                    double d =n*lightdir;
-                    d=(1.0+d)/2.0;
-                    d *= d;
-                    mapVal *= d;
-                }
-
-                image.setPixel(i,j,qRgb(mapVal, mapVal, mapVal));
-
+            int mapVal = ((mapToExport.at(i,j)-mapToExport.min())/(mapToExport.max()-mapToExport.min())*255);
+            if (vis){
+                vec3 n = Normal(i,j);
+                double d =n*lightdir;
+                d=(1.0+d)/2.0;
+                d *= d;
+                mapVal *= d;
             }
-        }
 
-        return image;
+            image.setPixel(i,j,qRgb(mapVal, mapVal, mapVal));
+
+        }
     }
 
-};
+    return image;
+}
+
+SF2 HeighField::GradientNorm(){
+    SF2 gradNorm = SF2(Grid2(*this));
+
+    for (int i = 0; i < nx; i++){
+        for (int j = 0; j < ny; j++){
+            vec2 grad = Gradient(i,j);
+            gradNorm.at(i,j) = sqrt(grad*grad);
+        }
+    }
+
+    return gradNorm;
+}
+
+SF2 HeighField::LaplacianMap(){
+    SF2 LaplMap = SF2(Grid2(*this));
+
+    for (int i = 0; i < nx; i++){
+        for (int j = 0; j < ny; j++){
+            LaplMap.at(i,j) = Laplacian(i,j);
+        }
+    }
+
+    return LaplMap;
+}
+
+/******************************************
+*          Classe LayeredField            *
+******************************************/
 
 class LayeredField : public Grid2
 {
@@ -396,7 +446,9 @@ public:
 };
 
 
-
+/******************************************
+*             Focntion main               *
+******************************************/
 
 int main (int argc, char *argv[]){
 
@@ -410,12 +462,14 @@ int main (int argc, char *argv[]){
     QImage im;
     im.load("../1000iterations.png");
 
-    HeighField hf = HeighField(im, Box2(vec2(1,0), vec2(0,1)), im.width(), im.height());
-    QImage myIm = hf.Export(hf, true);
-    QImage myImMap = hf.Export(hf);
+    HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
+    SF2 GN = hf.GradientNorm();
+    
+    // QImage myIm = hf.Export(hf, true);
+    // QImage myImMap = hf.Export(hf);
 
-    myIm.save("pilou.png");
-    myImMap.save("pilouTrue.png");
+    // myIm.save("pilou.png");
+    // myImMap.save("pilouTrue.png");
 
     return 0;
 }
