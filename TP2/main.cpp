@@ -401,6 +401,21 @@ void SF2::Smooth(){
     field = smoothed;
 }
 
+void SF2::Blur(){
+    std::vector<double> blured;
+    blured.resize(nx*ny);
+
+    for (int i = 0; i < nx ; i ++){
+        for (int j = 0; j < ny ; j ++){
+            int ind = Index(i,j);
+            
+            blured[ind] = getConv(i,j,1,1,1);
+        }
+    }
+
+    field = blured;
+}
+
 /******************************************
 *           Classe HeighField2            *
 ******************************************/
@@ -538,7 +553,7 @@ int main (int argc, char *argv[]){
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
     SF2 GN = hf.GradientNorm();
     
-    hf.Smooth();
+    hf.Blur();
 
     QImage myIm = hf.Export(hf, true);
     QImage myImMap = hf.Export(hf);
