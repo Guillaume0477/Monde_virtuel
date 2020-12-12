@@ -646,17 +646,17 @@ void Compute_params( HeighField hf, QString s){
     QImage avslope = hf.Export(AVSLOPE);
 
     //std::cout <<" hauteur_phong "<<s<< std::endl;
-    hauteur_phong.save("hauteur_phong"+s+".png");
+    hauteur_phong.save("Images/hauteur_phong"+s+".png");
     //std::cout <<" hauteur "<<s<< std::endl;
-    hauteur.save("hauteur"+s+".png");
+    hauteur.save("Images/hauteur"+s+".png");
     //std::cout <<" gradient "<<s<< std::endl;
-    gradient.save("gradient"+s+".png");
+    gradient.save("Images/gradient"+s+".png");
     //std::cout <<" laplacian "<<s<< std::endl;
-    laplacian.save("lapla"+s+".png");
+    laplacian.save("Images/lapla"+s+".png");
     //std::cout <<" slope "<<s<< std::endl;
-    slope.save("slope"+s+".png");
+    slope.save("Images/slope"+s+".png");
     //std::cout <<" avslope "<<s<< std::endl;
-    avslope.save("avslope"+s+".png");
+    avslope.save("Images/avslope"+s+".png");
 }
 
 
@@ -680,14 +680,16 @@ int main (int argc, char *argv[]){
 
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
     
-    // hf.Clamp(4, 7);
-    // Compute_params(hf, "_Clamp");
+    Compute_params(hf, "");
+
+    hf.Clamp(4, 7);
+    Compute_params(hf, "_Clamp");
 
     // hf.Smooth();
     // Compute_params(hf, "_Smooth");
 
-    hf.Blur();
-    Compute_params(hf, "_Blur");
+    // hf.Blur();
+    // Compute_params(hf, "_Blur");
 
 
     return 0;
