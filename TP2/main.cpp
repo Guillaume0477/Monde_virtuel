@@ -499,20 +499,32 @@ public:
         //std::cout << field.size() << ' ' << nx*ny << ' ' << nx << ' ' << ny << std::endl;
     }
 
-    double Height(int i, int j) const { return at(i, j); } // Nouveau nom
+    double Height(int i, int j) const { return at(i, j); } 
     double Slope(int i, int j) const
     {
         vec2 g = Gradient(i, j);
         return sqrt(g * g);
     }
 
-    double AverageSlope(int i, int j) const { return 0.0; }; //TODO
+    double AverageSlope(int, int) const; 
 
     vec3 Vertex(int i, int j) const { return vec3(Grid2::Vertex(i, j), Height(i, j)); }
     vec3 Normal(int i, int j) const { return vec3(-Gradient(i, j), 1.0).Normalized(); }
 
-    
+    SF2 SlopeMap(){return GradientNorm();}
+    SF2 AVGSlopeMap(){    
+        SF2 avgMap = SF2(Grid2(*this));
 
+        for (int i = 0; i < nx; i++){
+            for (int j = 0; j < ny; j++){
+                avgMap.at(i,j) = AverageSlope(i,j);
+            }
+        }
+
+        return avgMap;
+    }
+
+    //Exportation sous format d'image ! 
     QImage Export(SF2, bool) const;
 
 };
@@ -543,6 +555,61 @@ QImage HeighField::Export(SF2 mapToExport, bool vis = false) const
 
     return image;
 
+}
+
+double HeighField::AverageSlope(int i, int j) const{
+    double avgSlope = 0.0;    
+    float nb = 0;
+
+    float curHeight = at(i,j);
+
+    float diagVal = sqrt(celldiagonal[0]*celldiagonal[0] + celldiagonal[1]*celldiagonal[1]);
+
+    //top left
+    if ((i > 0)&&(j>0)){
+        avgSlope += (curHeight - at(i-1,j-1)) / diagVal;
+        nb++;
+    }
+    //top
+    if (i > 0){
+        avgSlope += (curHeight - at(i-1, j)) * celldiagonal[0];
+        nb++;
+    }
+    //top right
+    if ((i > 0)&&(j < ny-1)){
+        avgSlope += (curHeight - at(i-1,j+1)) / diagVal;
+        nb++;
+    }
+    //left
+    if (j>0){
+        avgSlope += (curHeight - at(i, j-1)) * celldiagonal[1];
+        nb++;
+    }
+    //right
+    if (j<ny-1){
+        avgSlope += (curHeight - at(i, j+1)) * celldiagonal[1];
+        nb++;
+    }
+    //bottom left
+    if ((i < nx-1) && (j>0)){
+        avgSlope += (curHeight - at(i+1,j-1)) / diagVal;
+        nb++;
+    }
+    //bottom
+    if (i<nx-1){
+        avgSlope += (curHeight - at(i+1, j)) * celldiagonal[0];
+        nb++;
+    }
+    //bottom right
+    if ((i < nx-1) && (j<ny-1)){
+        avgSlope += (curHeight - at(i+1,j+1)) / diagVal;
+        nb++;
+    }
+    
+    //normalization
+    avgSlope /= nb;
+
+    return avgSlope;
 }
 
 
@@ -590,6 +657,8 @@ int main (int argc, char *argv[]){
     //hf.Blur();
 
     //hf.Clamp(4, 7);
+
+
 
     QImage myIm = hf.Export(hf, true);
     QImage myImMap = hf.Export(hf);
