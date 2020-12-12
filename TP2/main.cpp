@@ -262,7 +262,7 @@ public:
     void Smooth();
     void Blur();
     void Normalize();
-    void Clamp();
+    void Clamp(float, float);
 
 };
 
@@ -427,6 +427,19 @@ void SF2::Normalize(){
 
 }
 
+void SF2::Clamp(float mini, float maxi){
+    
+    for (int k = 0; k < field.size(); k++){
+        if (field[k] < mini){
+            field[k] = mini;
+        } else if (field[k] > maxi){
+            field[k] = maxi;
+        }
+    }
+
+
+}
+
 /******************************************
 *           Classe HeighField2            *
 ******************************************/
@@ -570,7 +583,9 @@ int main (int argc, char *argv[]){
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
     SF2 GN = hf.GradientNorm();
     
-    hf.Blur();
+    //hf.Blur();
+
+    //hf.Clamp(4, 7);
 
     QImage myIm = hf.Export(hf, true);
     QImage myImMap = hf.Export(hf);
