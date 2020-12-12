@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
-#include <cmath>
+#include <math.h>
 #include <QImage>
 #include <algorithm>
 #include <fstream>
@@ -76,6 +76,11 @@ public:
         return os;
     }
 
+    inline vec2 round(){ return vec2(std::round(x), std::round(y));}
+
+    inline vec2 operator<(vec2 p){ return vec2(x < p.x, y < p.y);}
+    inline vec2 operator>(vec2 p){ return vec2(x > p.x, y > p.y);}
+
     friend class vec3;
 };
 
@@ -98,7 +103,6 @@ public:
 
     //inline friend vec3 operator/(double a, const vec3 &p) { return vec3(p.x/ a ,p.y/a , p.z/a); }
     inline friend vec3 operator*(double a, const vec3 &p) { return vec3(a * p.x, a * p.y, a * p.z); }
-
 
     inline double Length() const
     {
@@ -516,6 +520,8 @@ public:
         return sqrt(g * g);
     }
 
+    bool intersectRay(vec3, double&, vec3);
+
     double AverageSlope(int, int) const; 
 
     vec3 Vertex(int i, int j) const { return vec3(Grid2::Vertex(i, j), Height(i, j)); }
@@ -570,8 +576,35 @@ QImage HeighField::Export(SF2 mapToExport, bool vis = false) const
 
 }
 
+bool HeighField::intersectRay(vec3 rayDir, double& t, vec3 origin){
+
+    double epsilon = 1.0;
+    vec3 ray = origin + t*rayDir;
+
+    while (Inside(ceil(ray[0]), ceil(ray[1])) && (ray[2] < maxVal)){
+        //get z value by finding the maximum heigh between the 3 closest points
+        vec2 proj = vec2(ray[0], ray[1]);
+        vec2 roundProj = proj.round();
+        //vec2 diff = (proj > roundProj) * 2 - vec2(1.0, 1.0);
+
+        double height = at(roundProj[0], roundProj[1]);
+        
+        if (height > ray[2]){
+            return true;
+        } else {
+            t += epsilon;
+            ray = origin + t*rayDir;
+        }
+    }
+
+
+    return false;
+}
+
+
 double HeighField::AverageSlope(int i, int j) const{
-    double avgSlope = 0.0;    
+    double avgSlope = 0.0;  
+    double slopeVal;  
     float nb = 0;
 
     float curHeight = at(i,j);
@@ -580,42 +613,50 @@ double HeighField::AverageSlope(int i, int j) const{
 
     //top left
     if ((i > 0)&&(j>0)){
-        avgSlope += (curHeight - at(i-1,j-1)) / diagVal;
+        slopeVal =  (curHeight - at(i-1,j-1)) / diagVal;
+        avgSlope += sqrt(slopeVal*slopeVal);
         nb++;
     }
     //top
     if (i > 0){
-        avgSlope += (curHeight - at(i-1, j)) * celldiagonal[0];
+        slopeVal= (curHeight - at(i-1, j)) * inversecelldiagonal[0];
+        avgSlope += sqrt(slopeVal*slopeVal);
         nb++;
     }
     //top right
     if ((i > 0)&&(j < ny-1)){
-        avgSlope += (curHeight - at(i-1,j+1)) / diagVal;
+        slopeVal = (curHeight - at(i-1,j+1)) / diagVal;
+        avgSlope += sqrt(slopeVal*slopeVal);
         nb++;
     }
     //left
     if (j>0){
-        avgSlope += (curHeight - at(i, j-1)) * celldiagonal[1];
+        slopeVal= (curHeight - at(i, j-1)) * inversecelldiagonal[1];
+        avgSlope += sqrt(slopeVal*slopeVal);
         nb++;
     }
     //right
     if (j<ny-1){
-        avgSlope += (curHeight - at(i, j+1)) * celldiagonal[1];
+        slopeVal= (curHeight - at(i, j+1)) * inversecelldiagonal[1];
+        avgSlope += sqrt(slopeVal*slopeVal);
         nb++;
     }
     //bottom left
     if ((i < nx-1) && (j>0)){
-        avgSlope += (curHeight - at(i+1,j-1)) / diagVal;
+        slopeVal = (curHeight - at(i+1,j-1)) / diagVal;
+        avgSlope += sqrt(slopeVal*slopeVal);
         nb++;
     }
     //bottom
     if (i<nx-1){
-        avgSlope += (curHeight - at(i+1, j)) * celldiagonal[0];
+        slopeVal = (curHeight - at(i+1, j)) * inversecelldiagonal[0];
+        avgSlope += sqrt(slopeVal*slopeVal);
         nb++;
     }
     //bottom right
     if ((i < nx-1) && (j<ny-1)){
-        avgSlope += (curHeight - at(i+1,j+1)) / diagVal;
+        slopeVal = (curHeight - at(i+1,j+1)) / diagVal;
+        avgSlope += sqrt(slopeVal*slopeVal);
         nb++;
     }
     
@@ -697,6 +738,9 @@ public:
     LayeredField(const SF2 &bedrock, const SF2 &sand) : Grid2(bedrock), bedrock(bedrock), sand(sand) {}
 };
 
+/******************************************
+*           Useful fonctions              *
+******************************************/
 
 
 void Compute_params( HeighField hf, QString s){
@@ -737,37 +781,37 @@ int main (int argc, char *argv[]){
     /*******************
     //Batterie de tests
     ********************/
-    vec3 pilou = vec3(0.0, 1.0, 2.0);
+    // vec3 pilou = vec3(0.0, 1.0, 2.0);
 
-    vec3 normalized = pilou.Normalized();
+    // vec3 normalized = pilou.Normalized();
 
     //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
 
     QImage im;
     im.load("heightmap3.jpeg");
-
+    std::cout << im.width() << std::endl;
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
-    
+
     Compute_params(hf, "");
 
-    hf.Clamp(4, 7);
-    Compute_params(hf, "_Clamp");
+    // hf.Clamp(4, 7);
+    // Compute_params(hf, "_Clamp");
 
     // hf.Smooth();
     // Compute_params(hf, "_Smooth");
 
-    hf.ExportOBJ("Hf.obj");
+    // hf.ExportOBJ("Hf.obj");
 
 
-    QImage myIm = hf.Export(hf, true);
-    QImage myImMap = hf.Export(hf);
-    myIm.save("pilou.png");
-    myImMap.save("pilouTrue.png");
+    // QImage myIm = hf.Export(hf, true);
+    // QImage myImMap = hf.Export(hf);
+    // myIm.save("pilou.png");
+    // myImMap.save("pilouTrue.png");
 
-    std::ofstream myFile;
-    myFile.open("test.txt");
+    // std::ofstream myFile;
+    // myFile.open("test.txt");
 
-    myFile << vec3(0.0, 1.0, 12.0);
+    // myFile << vec3(0.0, 1.0, 12.0);
     
 
     // hf.Blur();
