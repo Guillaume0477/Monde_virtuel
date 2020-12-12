@@ -6,7 +6,7 @@
 #include <cmath>
 #include <QImage>
 #include <algorithm>
-
+#include <fstream>
 
 /******************************************
 *               Classe vec2               *
@@ -71,6 +71,11 @@ public:
         }
     }
 
+    inline friend  std::ostream& operator<<(std::ostream& os, vec2 p){
+        os << p.x << ' ' << p.y;
+        return os;
+    }
+
     friend class vec3;
 };
 
@@ -124,6 +129,11 @@ public:
             return y;
         else
             return z;
+    }
+
+    inline friend  std::ostream& operator<<(std::ostream& os, vec3 p){
+        os << p.x << ' ' << p.y << ' ' << p.z;
+        return os;
     }
 };
 
@@ -526,7 +536,9 @@ public:
 
     //Exportation sous format d'image ! 
     QImage Export(SF2, bool) const;
-    QImage Shade(SF2 mapToExport) const {return Export(mapToExport, true)};
+    QImage Shade(SF2 mapToExport) const {return Export(mapToExport, true);}
+
+    void ExportOBJ(char*);
 
 };
 
@@ -613,6 +625,62 @@ double HeighField::AverageSlope(int i, int j) const{
     return avgSlope;
 }
 
+void HeighField::ExportOBJ(char* filename){
+    std::ofstream objFile;
+    objFile.open(filename);
+
+    //Write vertices
+    for (int i = 0; i < nx; i ++){
+        for (int j = 0; j < ny ; j++){
+            vec3 vertex = Vertex(i,j);
+            objFile << "v " << vertex << std::endl;
+        }
+    }
+    
+    objFile << std::endl;
+
+    //Write normals
+    for (int i = 0; i < nx; i ++){
+        for (int j = 0; j < ny ; j++){
+            vec3 normal = Normal(i,j);
+            objFile << "vn " << normal << std::endl;
+        }
+    }
+    
+    objFile << std::endl;
+    
+    //Write texture coords
+    for (int i = 0; i < nx; i ++){
+        for (int j = 0; j < ny ; j++){
+            vec2 texCoord = vec2(float(i)/float(nx), float(j)/float(ny));
+            objFile << "vt " << texCoord << std::endl;
+        }
+    }
+
+    objFile << std::endl;
+
+    //Write faces
+    for (int i = 0; i < nx-1; i ++){
+        for (int j = 0; j < ny-1 ; j++){
+            int ind = Index(i,j);
+            int indr = Index(i, j+1);
+            int indb = Index(i+1, j);
+            int indd = Index(i+1, j+1);
+            objFile << "f " << ind << '/' << ind << '/' << ind << ' '
+            << indr << '/' << indr << '/' << indr << ' ' 
+            << indb << '/' << indb << '/' << indb << ' ' << std::endl;
+
+            objFile << "f " << indr << '/' << indr << '/' << indr << ' '
+            << indb << '/' << indb << '/' << indb << ' ' 
+            << indd << '/' << indd << '/' << indd << ' ' << std::endl;
+
+
+        }
+    }    
+
+
+}
+
 
 /******************************************
 *          Classe LayeredField            *
@@ -659,12 +727,20 @@ int main (int argc, char *argv[]){
 
     //hf.Clamp(4, 7);
 
+    hf.ExportOBJ("Hf.obj");
 
 
     QImage myIm = hf.Export(hf, true);
     QImage myImMap = hf.Export(hf);
     myIm.save("pilou.png");
     myImMap.save("pilouTrue.png");
+
+    std::ofstream myFile;
+    myFile.open("test.txt");
+
+    myFile << vec3(0.0, 1.0, 12.0);
+    
+
     return 0;
 }
 
