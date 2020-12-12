@@ -257,6 +257,11 @@ public:
     const double max() const {return maxVal;}
     const double min() const {return minVal;}
 
+    double getConv(int, int, float, float, float);
+
+    void Smooth();
+    void Blur();
+
 };
 
 vec2 SF2::Gradient(int i, int j) const // df/dx,df/dy ~ ( (f(x+e,y)-f(x-e,y))/2e , ... )
@@ -327,7 +332,74 @@ double SF2::Laplacian(int i, int j) const //d2f / dx2 ~ (f(x+e)-2f(x)+f(x+e))/(e
     return laplacian;
 }
 
+double SF2::getConv(int i, int j, float mid, float side, float diag){
+    float nb = 0;
+    float value = 0;
 
+    //top left
+    if ((i > 0)&&(j>0)){
+        value += diag*field[Index(i-1, j-1)];
+        nb+= diag;
+    }
+    //top
+    if (i > 0){
+        value += side*field[Index(i-1, j)];
+        nb+= side;
+    }
+    //top right
+    if ((i > 0)&&(j < ny-1)){
+        value += diag*field[Index(i-1, j+1)];
+        nb+=diag;
+    }
+    //left
+    if (j>0){
+        value += side*field[Index(i, j-1)];
+        nb+=side;
+    }
+    //right
+    if (j<ny-1){
+        value += side*field[Index(i, j+1)];
+        nb+=side;
+    }
+    //bottom left
+    if ((i < nx-1) && (j>0)){
+        value += diag*field[Index(i+1, j-1)];
+        nb+=diag;
+    }
+    //bottom
+    if (i<nx-1){
+        value += side*field[Index(i+1, j)];
+        nb+=side;
+    }
+    //bottom right
+    if ((i < nx-1) && (j<ny-1)){
+        value += diag*field[Index(i+1, j+1)];
+        nb+=diag;
+    }
+    //center
+    value += mid*field[Index(i,j)];
+    nb+=mid;
+
+    //normalization
+    value /= nb;
+
+    return value;
+}
+
+void SF2::Smooth(){
+    std::vector<double> smoothed;
+    smoothed.resize(nx*ny);
+
+    for (int i = 0; i < nx ; i ++){
+        for (int j = 0; j < ny ; j ++){
+            int ind = Index(i,j);
+            
+            smoothed[ind] = getConv(i,j,4,2,1);
+        }
+    }
+
+    field = smoothed;
+}
 
 /******************************************
 *           Classe HeighField2            *
@@ -383,12 +455,11 @@ QImage HeighField::Export(SF2 mapToExport, bool vis = false) const
     QImage image(nx,ny, QImage::Format_ARGB32);
 
     const vec3 lightdir = vec3(2.0, 1.0, 4.0).Normalized();
-
+    mapToExport.UpdateMinMax();
     for (int i=0; i <nx; i++)
     {
         for (int j=0; j <ny; j++)
         {
-            mapToExport.UpdateMinMax();
             int mapVal = ((mapToExport.at(i,j)-mapToExport.min())/(mapToExport.max()-mapToExport.min())*255);
             if (vis){
                 vec3 n = Normal(i,j);
@@ -404,6 +475,7 @@ QImage HeighField::Export(SF2 mapToExport, bool vis = false) const
     }
 
     return image;
+
 }
 
 SF2 HeighField::GradientNorm(){
@@ -466,12 +538,12 @@ int main (int argc, char *argv[]){
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
     SF2 GN = hf.GradientNorm();
     
-    // QImage myIm = hf.Export(hf, true);
-    // QImage myImMap = hf.Export(hf);
+    hf.Smooth();
 
-    // myIm.save("pilou.png");
-    // myImMap.save("pilouTrue.png");
-
+    QImage myIm = hf.Export(hf, true);
+    QImage myImMap = hf.Export(hf);
+    myIm.save("pilou.png");
+    myImMap.save("pilouTrue.png");
     return 0;
 }
 
