@@ -5,6 +5,7 @@
 #include <vector>
 #include <cmath>
 #include <QImage>
+#include <algorithm>
 
 class vec2
 {
@@ -208,7 +209,8 @@ class SF2 : public Grid2
 {
 protected:
     std::vector<double> field;
-
+    double maxVal = -1000000;
+    double minVal = 1000000;
 public:
     SF2() {}
     SF2(const Grid2 &grid) : Grid2(grid)
@@ -229,6 +231,20 @@ public:
         return field[Index(i, j)];
     }
 
+    void UpdateMinMax(){
+        for (int k = 0; k < field.size(); k++){
+            double val = field[k];
+            if (val > maxVal){
+                maxVal = val;
+            }
+            if (val < minVal){
+                minVal = val;
+            }
+        }
+    }
+
+    const double max() const {return maxVal;}
+    const double min() const {return minVal;}
 
 };
 
@@ -322,6 +338,8 @@ public:
                 // std::cout << field.back() << std::endl;
             }
         }
+
+        UpdateMinMax();
         //std::cout << field.size() << ' ' << nx*ny << ' ' << nx << ' ' << ny << std::endl;
     }
 
@@ -351,7 +369,8 @@ public:
                 double d =n*lightdir;
                 d=(1.0+d)/2.0;
                 d *= d;
-                int mapVal = (mapToExport.at(i,j)/10.0*255) *d;
+
+                int mapVal = ((mapToExport.at(i,j)-mapToExport.min())/(mapToExport.max()-mapToExport.min())*255) *d;
                 image.setPixel(i,j,qRgb(mapVal, mapVal, mapVal));
 
                 //std::cout << image.pixel(i,j) << std::endl;
@@ -390,7 +409,6 @@ int main (int argc, char *argv[]){
     im.load("../1000iterations.png");
 
     HeighField hf = HeighField(im, Box2(vec2(1,0), vec2(0,1)), im.width(), im.height());
-
     QImage myIm = hf.Export(hf);
 
     myIm.save("pilou.png");
