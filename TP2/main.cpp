@@ -8,6 +8,7 @@
 #include <QVector>
 #include <algorithm>
 #include <fstream>
+#include <map>
 
 
 /******************************************
@@ -32,10 +33,13 @@ public:
     inline friend vec2 operator*(double a, const vec2& p) { 
         return vec2(a * p.x, a * p.y); 
     }
-
-
-
+    
     inline double Length() const { return sqrt(x * x + y * y); }
+    inline vec2 Normalized() const
+    {
+        return (1.0/ Length())* (*this);
+    }
+
 
     inline vec2 Scale(const vec2 &p) { return vec2(x * p.x, y * p.y); }
 
@@ -296,6 +300,16 @@ public:
     double &at(int i, int j)
     {
         return field[Index(i, j)];
+    }
+
+    const double operator[](int i) const
+    {
+        return field[i];
+    }
+
+    double &operator[] (int i)
+    {
+        return field[i];
     }
 
     void UpdateMinMax(){
@@ -1083,7 +1097,84 @@ protected:
 public:
     LayeredField(const SF2 &bedrock) : Grid2(bedrock), bedrock(bedrock) {}
     LayeredField(const SF2 &bedrock, const SF2 &sand) : Grid2(bedrock), bedrock(bedrock), sand(sand) {}
+
+    LayeredField(const HeighField H, const double percentSand) : Grid2(H){
+        double sandHeight = percentSand * H.max();
+
+        bedrock = SF2(Grid2(H));
+        sand = SF2(Grid2(H));
+
+        for (int k = 0 ; k < nx*ny ; k ++){
+            sand[k] = std::min(sandHeight, H[k]);
+            bedrock[k] = H[k] - sand[k];
+        }
+        bedrock.UpdateMinMax();
+        sand.UpdateMinMax();
+
+    }
+
+    HeighField toHeighField(){
+        HeighField H = HeighField(SF2(Grid2(*this)));
+
+        for (int k = 0; k < nx*ny ; k++ ){
+            H[k] = bedrock[k] + sand[k];
+        }
+        H.UpdateMinMax();
+        return H;
+    }
+
+    void TermalErosion(int);
+
 };
+
+
+void LayeredField::TermalErosion(int nbEpoch){
+
+    double tanTheta = 2000*tan(M_PI/4.0);
+    std::cout << celldiagonal[0] << ' '<< inversecelldiagonal[0] << std::endl;
+    double k = 0.0001;
+
+    for (int n = 0; n < nbEpoch ; n++){
+        std::multimap<double, std::pair<int,int>> myMap;
+        std::multimap<double, std::pair<int,int>>::iterator it = myMap.begin();
+        for (int i = 0; i < nx ; i ++){
+            for (int j = 0; j < ny ; j++){
+                std::pair<double, std::pair<int,int>> pairToAdd = std::pair<double, std::pair<int,int>>(bedrock.at(i,j)+sand.at(i,j), std::pair<int,int>(i,j));
+                myMap.insert(pairToAdd);           
+                it++;
+            }
+        }    
+
+        for(auto it = myMap.begin(); it != myMap.end(); it++){
+            int i,j;
+            i = it->second.first;
+            j = it->second.second;
+
+            //recup les voisins tq s > tan theta
+            vec2 grad = bedrock.Gradient(i,j) + sand.Gradient(i,j);
+            double s = sqrt(grad*grad);
+            // std::cout << s << std::endl;
+            if (s > tanTheta){
+                //Donne à chaque voisin un pourcentage du sable
+                vec2 rGrad = grad.Normalized().round();
+
+                int ibis = i - rGrad[0];
+                int jbis = j - rGrad[1];
+                
+                // std::cout <<"ij " << i << ' ' << j << std::endl;
+                // std::cout << ibis << ' ' << jbis << std::endl;
+
+                sand.at(i,j) -= std::min(sand.at(i,j), k*(s-tanTheta));
+
+                if ((ibis > 0) && (jbis > 0) && (ibis < nx) && (jbis < ny)){
+                    sand.at(ibis,jbis) += std::min(sand.at(i,j), k*(s-tanTheta));
+                }
+            }
+        }
+
+    }
+
+}
 
 /******************************************
 *           Useful fonctions              *
@@ -1155,24 +1246,39 @@ int main (int argc, char *argv[]){
     im.load("heightmap3.jpeg");
 
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
+    SF2 pente = hf.SlopeMap();
+    pente.UpdateMinMax();
 
-    Compute_params(hf, "");
+    hf.Smooth();
+    std::cout << pente.max() << ' ' << pente.min() << std::endl;
+    LayeredField lf = LayeredField(hf, 0.1);
+    
+    lf.TermalErosion(10);
+    
+    HeighField h = lf.toHeighField();
+    std::cout << h.max() << ' ' << h.min() << std::endl;
+    std::cout << hf.max() << ' ' << hf.min() << std::endl;
+    // std::cout << hf.at(422,422) << ' ' << hf.at(422, 423) << std::endl;
+    // std::cout << hf.Gradient(422,422) << std::endl;
+    // std::cout << pente.at(422, 422) << std::endl;
+
+    // Compute_params(hf, "");
 
     // hf.Clamp(4, 7);
     // Compute_params(hf, "_Clamp");
 
-    hf.Smooth();
-    hf.Smooth();
-    Compute_params(hf, "_Smooth");
+    // hf.Smooth();
+    // hf.Smooth();
+    // Compute_params(hf, "_Smooth");
 
     // hf.ExportOBJ("Hf.obj");
 
-    SF2 acc = hf.accessMap();
-    acc.UpdateMinMax();
+    // SF2 acc = hf.accessMap();
+    // acc.UpdateMinMax();
 
-    // QImage myIm = hf.Export(hf, true);
-    QImage myImMap = hf.Export(acc);
-    // myIm.save("pilou.png");
+    QImage myIm = hf.Export(hf);
+    QImage myImMap = h.Export(h);
+    myIm.save("pilou.png");
     myImMap.save("pilouTrue.png");
 
 
