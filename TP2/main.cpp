@@ -468,7 +468,11 @@ SF2 SF2::GradientNorm() const{
         for (int j = 0; j < ny; j++){
             vec2 grad = Gradient(i,j);
             gradNorm.at(i,j) = sqrt(grad*grad);
+<<<<<<< HEAD
             // std::cout<<sqrt(grad*grad)<<std::endl;
+=======
+            //std::cout<<sqrt(grad*grad)<<std::endl;
+>>>>>>> b5fff1fdcf6c826ecaa03eb85094c8e8f45bb4e0
         }
     }
 
@@ -943,7 +947,11 @@ SF2 HeighField::StreamAreaStreepest() const{
         //QEE.at(i).Point();
         QPoint p = QEE.at(i).Point();
 
+<<<<<<< HEAD
         // std::cout<<"at_p "<<at(p.x(), p.y())<<std::endl;
+=======
+        //std::cout<<"at_p "<<at(p.x(), p.y())<<std::endl;
+>>>>>>> b5fff1fdcf6c826ecaa03eb85094c8e8f45bb4e0
 
 
         
@@ -1027,7 +1035,11 @@ SF2 HeighField::StreamArea() const{
         //QEE.at(i).Point();
         QPoint p = QEE.at(i).Point();
 
+<<<<<<< HEAD
         // std::cout<<"at_p "<<at(p.x(), p.y())<<std::endl;
+=======
+        //std::cout<<"at_p "<<at(p.x(), p.y())<<std::endl;
+>>>>>>> b5fff1fdcf6c826ecaa03eb85094c8e8f45bb4e0
 
 
         
@@ -1182,45 +1194,45 @@ void LayeredField::TermalErosion(int nbEpoch){
 
 void Compute_params( HeighField hf, QString s){
 
-    ///SF2 GRAD = hf.GradientNorm();
-    // SF2 LAP = hf.LaplacianMap();
-    // SF2 SLOPE = hf.SlopeMap();
-    // SF2 AVSLOPE = hf.AVGSlopeMap();
-    // SF2 ACCESS = hf.accessMap();
+    SF2 GRAD = hf.GradientNorm();
+    SF2 LAP = hf.LaplacianMap();
+    SF2 SLOPE = hf.SlopeMap();
+    SF2 AVSLOPE = hf.AVGSlopeMap();
+    SF2 ACCESS = hf.accessMap();
     SF2 AreaStreepest = hf.StreamAreaStreepest();
     SF2 Area = hf.StreamArea();
     SF2 Power = hf.StreamPower();
 
-    // QImage hauteur_phong = hf.Shade(hf);
-    // QImage hauteur = hf.Export(hf);
-    ///QImage gradient = hf.Export(GRAD);
-    // QImage laplacian = hf.Export(LAP);
-    // QImage slope = hf.Export(SLOPE);
-    // QImage avslope = hf.Export(AVSLOPE);
-    // QImage acc = hf.Export(ACCESS);
+    QImage hauteur_phong = hf.Shade(hf);
+    QImage hauteur = hf.Export(hf);
+    QImage gradient = hf.Export(GRAD);
+    QImage laplacian = hf.Export(LAP);
+    QImage slope = hf.Export(SLOPE);
+    QImage avslope = hf.Export(AVSLOPE);
+    QImage acc = hf.Export(ACCESS);
     QImage StreamAreaStreepest = hf.Export(AreaStreepest);
     QImage StreamArea = hf.Export(Area);
     QImage StreamPower = hf.Export(Power);
 
 
-    // //std::cout <<" hauteur_phong "<<s<< std::endl;
-    // hauteur_phong.save("Images/hauteur_phong"+s+".png");
-    // //std::cout <<" hauteur "<<s<< std::endl;
-    // hauteur.save("Images/hauteur"+s+".png");
-    // //std::cout <<" gradient "<<s<< std::endl;
-    ///gradient.save("Images/gradient"+s+".png");
-    // //std::cout <<" laplacian "<<s<< std::endl;
-    // laplacian.save("Images/lapla"+s+".png");
-    // //std::cout <<" slope "<<s<< std::endl;
-    // slope.save("Images/slope"+s+".png");
-    // //std::cout <<" avslope "<<s<< std::endl;
-    // avslope.save("Images/avslope"+s+".png");
+    //std::cout <<" hauteur_phong "<<s<< std::endl;
+    hauteur_phong.save("Images2/hauteur_phong"+s+".png");
+    //std::cout <<" hauteur "<<s<< std::endl;
+    hauteur.save("Images2/hauteur"+s+".png");
+    //std::cout <<" gradient "<<s<< std::endl;
+    gradient.save("Images2/gradient"+s+".png");
+    //std::cout <<" laplacian "<<s<< std::endl;
+    laplacian.save("Images2/lapla"+s+".png");
+    //std::cout <<" slope "<<s<< std::endl;
+    slope.save("Images2/slope"+s+".png");
+    //std::cout <<" avslope "<<s<< std::endl;
+    avslope.save("Images2/avslope"+s+".png");
 
-    // acc.save("Images/access" + s + ".png");
+    acc.save("Images2/access" + s + ".png");
 
-    StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
-    StreamArea.save("Images/StreamArea"+s+".png");
-    StreamPower.save("Images/StreamPower"+s+".png");
+    StreamAreaStreepest.save("Images2/StreamAreaStreepest"+s+".png");
+    StreamArea.save("Images2/StreamArea"+s+".png");
+    StreamPower.save("Images2/StreamPower"+s+".png");
 
 
 }
@@ -1242,15 +1254,23 @@ int main (int argc, char *argv[]){
     //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
 
     QImage im;
-    im.load("heightmap3.jpeg");
+    //im.load("heightmap3.jpeg");
+    im.load("montagne.png");
 
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
     // SF2 pente = hf.SlopeMap();
     // pente.UpdateMinMax();
 
+<<<<<<< HEAD
     // hf.Smooth();
     // // std::cout << pente.max() << ' ' << pente.min() << std::endl;
     // LayeredField lf = LayeredField(hf, 0.1);
+=======
+<<<<<<< Updated upstream
+    hf.Smooth();
+    std::cout << pente.max() << ' ' << pente.min() << std::endl;
+    LayeredField lf = LayeredField(hf, 0.1);
+>>>>>>> b5fff1fdcf6c826ecaa03eb85094c8e8f45bb4e0
     
     // lf.TermalErosion(100);
     
@@ -1262,6 +1282,9 @@ int main (int argc, char *argv[]){
     // std::cout << pente.at(422, 422) << std::endl;
 
     // Compute_params(hf, "");
+=======
+    //Compute_params(hf, "");
+>>>>>>> Stashed changes
 
     // hf.Clamp(4, 7);
     // Compute_params(hf, "_Clamp");
