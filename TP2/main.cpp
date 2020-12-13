@@ -315,7 +315,7 @@ public:
 
     double getConv(int, int, float, float, float);
 
-    SF2 GradientNorm();
+    SF2 GradientNorm() const ;
     SF2 LaplacianMap();
 
     void Smooth();
@@ -447,7 +447,7 @@ double SF2::getConv(int i, int j, float mid, float side, float diag){
     return value;
 }
 
-SF2 SF2::GradientNorm(){
+SF2 SF2::GradientNorm() const{
     SF2 gradNorm = SF2(Grid2(*this));
 
     for (int i = 0; i < nx; i++){
@@ -595,7 +595,7 @@ public:
     vec3 Vertex(int i, int j) const { return vec3(Grid2::Vertex(i, j), Height(i, j)); }
     vec3 Normal(int i, int j) const { return vec3(-Gradient(i, j), 1.0).Normalized(); }
 
-    SF2 SlopeMap(){return GradientNorm();}
+    SF2 SlopeMap() const {return GradientNorm();}
     SF2 AVGSlopeMap(){    
         SF2 avgMap = SF2(Grid2(*this));
 
@@ -608,6 +608,8 @@ public:
     }
     int CheckFlowSlope( const QPoint& p, QPoint* point, double* height, double* slope, double* nslone, int& mask) const;
     SF2 StreamAreaStreepest() const;
+    SF2 StreamArea() const;
+    SF2 StreamPower() const;
 
 
     //Exportation sous format d'image ! 
@@ -866,7 +868,7 @@ int HeighField::CheckFlowSlope( const QPoint& p, QPoint* point, double* height, 
         // std::cout<<"at_b "<<at(b.x(), b.y())<<std::endl;
         // std::cout<<"step "<<step<<std::endl;
 
-        if (step !=0.0)
+        if (step <0.0)
         {
             point[n] = b;
             //std::cout<<"point "<<point[n].x()<<" "<<point[n].y() <<std::endl;
@@ -878,6 +880,7 @@ int HeighField::CheckFlowSlope( const QPoint& p, QPoint* point, double* height, 
         }
 
     }
+
     for (int k=0; k<n; k++){
         nslone[k] = slope[k] / slopesum;
     }
@@ -951,7 +954,7 @@ SF2 HeighField::StreamAreaStreepest() const{
         {
             double ss = s[0]; //calcul max s
             int k=0;
-            for (int j=1; j<n;j++)
+            for (int j=0; j<n;j++)
             {
                 if (s[j] > ss) {
                     k=j;
@@ -969,15 +972,95 @@ SF2 HeighField::StreamAreaStreepest() const{
 
 
 
+SF2 HeighField::StreamArea() const{
+
+    SF2 stream = SF2(Grid2(Box2(a,b),nx,ny),1.0);
+
+    // SF2 stream = SF2(Grid2(*this));
+
+    // for (int i = 0; i < nx; i++){
+    //     for (int j = 0; j < ny; j++){
+    //         stream.at(i,j) = 1.0;
+    //     }
+    // }
+    // stream.at(2,2) = 0.01;
+
+    QVector<ScalarPoint2> QEE = GetScalarPoints();
+
+    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
+    // for (int i = QEE.size() -1; i>=0; i--){
+    //     std::cout<<QEE.at(i).Scalar()<<std::endl;
+    //     //stream.at(q[k].x(), q[k].y()) += sp;
+    // }
+    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
+    
+    // QVector<ScalarPoint2> QEE = QVector(ScalarPoint2(next,length))
+    std::sort(QEE.begin(), QEE.end());
+
+    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
+    // for (int i = QEE.size() -1; i>=0; i--){
+    //     std::cout<<QEE.at(i).Scalar()<<std::endl;
+    //     //stream.at(q[k].x(), q[k].y()) += sp;
+    // }
+    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
+
+    for (int i = QEE.size() -1; i>=0; i--){
+        
+        // QPoint q = QPoint(2,2);
+        // double z = 5;
+        // ScalarPoint2 p = ScalarPoint2(q,z);
+        // p.Point(); 
+        //QEE.at(i).Point();
+        QPoint p = QEE.at(i).Point();
+
+        std::cout<<"at_p "<<at(p.x(), p.y())<<std::endl;
+
+
+        
+
+        QPoint q[8];
+        double h[8];
+        double s[8];
+        double sn[8];
+        int m;
+
+        int n = CheckFlowSlope(p,q,h,s,sn,m);
+
+        // std::cout<<"p "<<p.x()<<" , "<<p.y()<<std::endl;
+        // for (int j=0; j<8; j++){
+        //     std::cout<<"q "<<j<<" "<<q[j].x()<<" "<<q[j].y()<<std::endl;
+        //     std::cout<<"h "<<j<<" "<<h[j]<<std::endl;
+        //     std::cout<<"s "<<j<<" "<<s[j]<<std::endl;
+        //     std::cout<<"sn "<<j<<" "<<sn[j]<<std::endl;
+        // }
+        // std::cout<<"N "<<n<<std::endl;
+        if (n>0)
+        {
+            const double sp = stream.at(p.x(),p.y());
+
+            for (int k=0; k<n;k++)
+            {
+                stream.at(q[k].x(), q[k].y()) += sp * sn[k];
+                //std::cout<<"sn "<<k<<" "<<sn[k]<<std::endl;
+
+
+            }
+            
+
+        }
+
+    }
+    return stream;
+};
 
 
 
 
-/*
-SF2 HeightField::stream_power() const
-{
-    SF2 stream = stream_area();
-    SF2 slope = slope_map();
+
+
+SF2 HeighField::StreamPower() const{
+    SF2 stream = StreamArea();
+    SF2 slope = SlopeMap();
     SF2 res(Grid2(*this));
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < ny; ++j) {
@@ -1014,7 +1097,9 @@ void Compute_params( HeighField hf, QString s){
     // SF2 SLOPE = hf.SlopeMap();
     // SF2 AVSLOPE = hf.AVGSlopeMap();
     // SF2 ACCESS = hf.accessMap();
-    SF2 StreamTEST = hf.StreamAreaStreepest();
+    SF2 AreaStreepest = hf.StreamAreaStreepest();
+    SF2 Area = hf.StreamArea();
+    SF2 Power = hf.StreamPower();
 
     // QImage hauteur_phong = hf.Shade(hf);
     // QImage hauteur = hf.Export(hf);
@@ -1023,7 +1108,9 @@ void Compute_params( HeighField hf, QString s){
     // QImage slope = hf.Export(SLOPE);
     // QImage avslope = hf.Export(AVSLOPE);
     // QImage acc = hf.Export(ACCESS);
-    QImage StreamAreaStreepest = hf.Export(StreamTEST);
+    QImage StreamAreaStreepest = hf.Export(AreaStreepest);
+    QImage StreamArea = hf.Export(Area);
+    QImage StreamPower = hf.Export(Power);
 
 
     // //std::cout <<" hauteur_phong "<<s<< std::endl;
@@ -1042,6 +1129,8 @@ void Compute_params( HeighField hf, QString s){
     // acc.save("Images/access" + s + ".png");
 
     StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
+    StreamArea.save("Images/StreamArea"+s+".png");
+    StreamPower.save("Images/StreamPower"+s+".png");
 
 
 }
@@ -1067,7 +1156,7 @@ int main (int argc, char *argv[]){
 
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
 
-    // Compute_params(hf, "");
+    Compute_params(hf, "");
 
     // hf.Clamp(4, 7);
     // Compute_params(hf, "_Clamp");
