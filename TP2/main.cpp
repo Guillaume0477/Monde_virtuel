@@ -500,7 +500,7 @@ public:
         Grid2 grid = Grid2(box, nx, ny);
         *this = SF2(grid);
 
-        float normFact = 10.0;
+        float normFact = 500.0;
 
         //Remplissage des hauteurs
         for (int x = 0; x < nx; x ++){
@@ -522,7 +522,7 @@ public:
     }
 
     bool intersectRay(vec3, double&, vec3);
-    double access(int,int, int N = 100);
+    double access(int,int, int N = 20);
     SF2 accessMap(){    
         SF2 accMap = SF2(Grid2(*this));
 
@@ -595,14 +595,16 @@ bool HeighField::intersectRay(vec3 rayDir, double& t, vec3 origin){
     double epsilon = 1.0;
     vec3 ray = origin + t*rayDir;
 
-    while (Inside(std::round(ray[0]), std::round(ray[1])) && (ray[2] < maxVal)){
+    while (Inside(std::round(ray[0]), std::round(ray[1])) && (ray[2] < maxVal) && (ray[2]>0)){
         //get z value by finding the maximum heigh between the 3 closest points
         vec2 proj = vec2(ray[0], ray[1]);
         vec2 roundProj = proj.round();
+
+
         //vec2 diff = (proj > roundProj) * 2 - vec2(1.0, 1.0);
 
         double height = at(roundProj[0], roundProj[1]);
-        
+
         if (height > ray[2]){
             return true;
         } else {
@@ -802,6 +804,7 @@ void Compute_params( HeighField hf, QString s){
     SF2 LAP = hf.LaplacianMap();
     SF2 SLOPE = hf.SlopeMap();
     SF2 AVSLOPE = hf.AVGSlopeMap();
+    SF2 ACCESS = hf.accessMap();
 
     QImage hauteur_phong = hf.Shade(hf);
     QImage hauteur = hf.Export(hf);
@@ -809,6 +812,7 @@ void Compute_params( HeighField hf, QString s){
     QImage laplacian = hf.Export(LAP);
     QImage slope = hf.Export(SLOPE);
     QImage avslope = hf.Export(AVSLOPE);
+    QImage acc = hf.Export(ACCESS);
 
     //std::cout <<" hauteur_phong "<<s<< std::endl;
     hauteur_phong.save("Images/hauteur_phong"+s+".png");
@@ -822,6 +826,8 @@ void Compute_params( HeighField hf, QString s){
     slope.save("Images/slope"+s+".png");
     //std::cout <<" avslope "<<s<< std::endl;
     avslope.save("Images/avslope"+s+".png");
+
+    acc.save("Images/access" + s + ".png");
 }
 
 
