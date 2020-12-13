@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <fstream>
 
+
 /******************************************
 *               Classe vec2               *
 ******************************************/
@@ -521,6 +522,19 @@ public:
     }
 
     bool intersectRay(vec3, double&, vec3);
+    double access(int,int, int N = 100);
+    SF2 accessMap(){    
+        SF2 accMap = SF2(Grid2(*this));
+
+        for (int i = 0; i < nx; i++){
+            for (int j = 0; j < ny; j++){
+                accMap.at(i,j) = access(i,j);
+            }
+        }
+
+        return accMap;
+    }
+
 
     double AverageSlope(int, int) const; 
 
@@ -581,7 +595,7 @@ bool HeighField::intersectRay(vec3 rayDir, double& t, vec3 origin){
     double epsilon = 1.0;
     vec3 ray = origin + t*rayDir;
 
-    while (Inside(ceil(ray[0]), ceil(ray[1])) && (ray[2] < maxVal)){
+    while (Inside(std::round(ray[0]), std::round(ray[1])) && (ray[2] < maxVal)){
         //get z value by finding the maximum heigh between the 3 closest points
         vec2 proj = vec2(ray[0], ray[1]);
         vec2 roundProj = proj.round();
@@ -597,9 +611,48 @@ bool HeighField::intersectRay(vec3 rayDir, double& t, vec3 origin){
         }
     }
 
-
     return false;
 }
+
+double HeighField::access(int i, int j, int Nray){
+    double accessVal = 0.0;
+
+    vec3 origin = vec3(i,j,at(i,j));
+    for (int r = 0; r < Nray ; r++){
+        //Create ray direction randomly on hemisphere (formula (34) GI Compedium)
+        vec3 rayDir;
+        double t = 1;
+
+        double r1,r2; 
+        r1 = double(rand())/RAND_MAX;
+        r2 = double(rand())/RAND_MAX;
+        //Direction aléatoire dans l'espace tangent
+        vec3 rayDirTan = vec3(cos(2*M_PI*r1) * sqrt(1-r2*r2), sin(2*M_PI*r1)*sqrt(1-r2*r2), r2);
+
+        vec3 ta, bi, n;
+        n = Normal(i,j);
+
+        //Code from J-C.IEHL to transfer a vector from tangent space to world space
+        float sign= n[2] < 0 ? -1 : 1;             
+        float a= -1.0 / (sign + n[2]);
+        float d= n[0] * n[1] * a;
+        ta= vec3(1.0 + sign * n[0] * n[0] * a, sign * d, -sign * n[0]);
+        bi= vec3(d, sign + n[1] * n[1] * a, -n[1]);
+
+        rayDir = rayDirTan[0] * ta.Normalized() + rayDirTan[1] * bi.Normalized() + rayDirTan[2] * n.Normalized();
+        //End of the code inspired from J-C.IEHL
+
+        //Check the visibility
+        if (intersectRay(rayDir.Normalized(), t, origin) == false){
+            accessVal++;
+        }
+
+    }
+
+    return accessVal/double(Nray);
+}
+
+
 
 
 double HeighField::AverageSlope(int i, int j) const{
@@ -789,7 +842,7 @@ int main (int argc, char *argv[]){
 
     QImage im;
     im.load("heightmap3.jpeg");
-    std::cout << im.width() << std::endl;
+
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
 
     Compute_params(hf, "");
@@ -802,11 +855,13 @@ int main (int argc, char *argv[]){
 
     // hf.ExportOBJ("Hf.obj");
 
+    SF2 acc = hf.accessMap();
+    acc.UpdateMinMax();
 
     // QImage myIm = hf.Export(hf, true);
-    // QImage myImMap = hf.Export(hf);
+    QImage myImMap = hf.Export(acc);
     // myIm.save("pilou.png");
-    // myImMap.save("pilouTrue.png");
+    myImMap.save("pilouTrue.png");
 
     // std::ofstream myFile;
     // myFile.open("test.txt");
