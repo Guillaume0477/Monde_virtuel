@@ -624,6 +624,7 @@ public:
     SF2 StreamAreaStreepest() const;
     SF2 StreamArea() const;
     SF2 StreamPower() const;
+    SF2 WetNessIndex() const;
 
 
     //Exportation sous format d'image ! 
@@ -1084,6 +1085,25 @@ SF2 HeighField::StreamPower() const{
     return res;
 }
 
+SF2 HeighField::WetNessIndex() const{
+    SF2 stream = StreamArea();
+    SF2 slope = SlopeMap();
+    SF2 res(Grid2(*this));
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
+            res.at(i, j) = log(stream.at(i, j)) * slope.at(i, j);
+        }
+    }
+    return res;
+}
+
+
+
+
+
+
+
+
 /******************************************
 *          Classe LayeredField            *
 ******************************************/
@@ -1191,6 +1211,7 @@ void Compute_params( HeighField hf, QString s){
     SF2 AreaStreepest = hf.StreamAreaStreepest();
     SF2 Area = hf.StreamArea();
     SF2 Power = hf.StreamPower();
+    SF2 WET = hf.WetNessIndex();
 
     QImage hauteur_phong = hf.Shade(hf);
     QImage hauteur = hf.Export(hf);
@@ -1202,26 +1223,28 @@ void Compute_params( HeighField hf, QString s){
     QImage StreamAreaStreepest = hf.Export(AreaStreepest);
     QImage StreamArea = hf.Export(Area);
     QImage StreamPower = hf.Export(Power);
+    QImage WetNessIndex = hf.Export(WET);
 
 
     //std::cout <<" hauteur_phong "<<s<< std::endl;
-    hauteur_phong.save("Images2/hauteur_phong"+s+".png");
+    hauteur_phong.save("Images/hauteur_phong"+s+".png");
     //std::cout <<" hauteur "<<s<< std::endl;
-    hauteur.save("Images2/hauteur"+s+".png");
+    hauteur.save("Images/hauteur"+s+".png");
     //std::cout <<" gradient "<<s<< std::endl;
-    gradient.save("Images2/gradient"+s+".png");
+    gradient.save("Images/gradient"+s+".png");
     //std::cout <<" laplacian "<<s<< std::endl;
-    laplacian.save("Images2/lapla"+s+".png");
+    laplacian.save("Images/lapla"+s+".png");
     //std::cout <<" slope "<<s<< std::endl;
-    slope.save("Images2/slope"+s+".png");
+    slope.save("Images/slope"+s+".png");
     //std::cout <<" avslope "<<s<< std::endl;
-    avslope.save("Images2/avslope"+s+".png");
+    avslope.save("Images/avslope"+s+".png");
 
-    acc.save("Images2/access" + s + ".png");
+    acc.save("Images/access" + s + ".png");
 
-    StreamAreaStreepest.save("Images2/StreamAreaStreepest"+s+".png");
-    StreamArea.save("Images2/StreamArea"+s+".png");
-    StreamPower.save("Images2/StreamPower"+s+".png");
+    StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
+    StreamArea.save("Images/StreamArea"+s+".png");
+    StreamPower.save("Images/StreamPower"+s+".png");
+    WetNessIndex.save("Images/WetNessIndex"+s+".png");
 
 
 }
@@ -1243,14 +1266,14 @@ int main (int argc, char *argv[]){
     //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
 
     QImage im;
-    //im.load("heightmap3.jpeg");
-    im.load("montagne.png");
+    im.load("heightmap3.jpeg");
+    //im.load("montagne.png");
 
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
     SF2 pente = hf.SlopeMap();
     pente.UpdateMinMax();
 
-<<<<<<< Updated upstream
+
     hf.Smooth();
     std::cout << pente.max() << ' ' << pente.min() << std::endl;
     LayeredField lf = LayeredField(hf, 0.1);
@@ -1264,17 +1287,15 @@ int main (int argc, char *argv[]){
     // std::cout << hf.Gradient(422,422) << std::endl;
     // std::cout << pente.at(422, 422) << std::endl;
 
-    // Compute_params(hf, "");
-=======
-    //Compute_params(hf, "");
->>>>>>> Stashed changes
+    Compute_params(hf, "");
+
 
     // hf.Clamp(4, 7);
     // Compute_params(hf, "_Clamp");
 
-    // hf.Smooth();
-    // hf.Smooth();
-    // Compute_params(hf, "_Smooth");
+    hf.Smooth();
+    hf.Smooth();
+    Compute_params(hf, "_Smooth");
 
     // hf.ExportOBJ("Hf.obj");
 
