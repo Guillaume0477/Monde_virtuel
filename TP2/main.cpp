@@ -5,6 +5,7 @@
 #include <vector>
 #include <math.h>
 #include <QImage>
+#include <QVector>
 #include <algorithm>
 #include <fstream>
 
@@ -143,6 +144,36 @@ public:
 };
 
 
+
+/******************************************
+*           Classe ScalarPoint2           *
+******************************************/
+
+class VectorField2;
+
+class ScalarPoint2
+{
+protected:
+    QPoint p;
+    double z;
+public:
+    ScalarPoint2() {}
+    ScalarPoint2(const QPoint& p1, const double& z1){
+        p = p1; 
+        z= z1;
+    };
+    friend bool operator<(const ScalarPoint2& a, const ScalarPoint2& b) {
+        return a.z < b.z;
+    };
+    QPoint Point() const {return p;};
+    double Scalar() const;
+
+};
+
+
+
+
+
 /******************************************
 *               Classe Box2               *
 ******************************************/
@@ -219,6 +250,9 @@ public:
 
     int Index(int i, int j) const { return i + j * nx; }
 
+    // const QPoint next[8] = { QPoint (1,0) ,QPoint (1,1) ,QPoint (0,1) ,QPoint (-1,1) ,QPoint (0,-1) ,QPoint (-1,-1) ,QPoint (-1,0), QPoint (1,-1) };
+    // const double length[8] = {1.0 , sqrt(2.0),1.0 , sqrt(2.0),1.0 , sqrt(2.0),1.0 , sqrt(2.0)};
+
     vec2 Vertex(int i, int j) const
     {
         double u = double(i) / (nx - 1);
@@ -242,6 +276,10 @@ public:
     SF2(const Grid2 &grid) : Grid2(grid)
     {
         field.resize(nx * ny, 0.0);
+    }
+    SF2(const Grid2 &grid, const double &hz) : Grid2(grid)
+    {
+        field.resize(nx * ny, hz);
     }
 
     vec2 Gradient(int, int) const;
@@ -281,7 +319,7 @@ public:
     void Blur();
     void Normalize();
     void Clamp(float, float);
-
+    QVector<ScalarPoint2> GetScalarPoints() const;
 };
 
 vec2 SF2::Gradient(int i, int j) const // df/dx,df/dy ~ ( (f(x+e,y)-f(x-e,y))/2e , ... )
@@ -480,9 +518,20 @@ void SF2::Clamp(float mini, float maxi){
             field[k] = maxi;
         }
     }
+};
 
 
-}
+QVector<ScalarPoint2> SF2::GetScalarPoints() const
+{
+    QVector<ScalarPoint2> e(nx * ny);
+    int k=0;
+    for (int i=0; 1 < nx ; i++){
+        for (int j=0; 1 < ny ; j++){
+            e[k++] = ScalarPoint2(QPoint(i,j), at(i,j));
+        }
+    }
+    return e;
+};
 
 /******************************************
 *           Classe HeighField2            *
@@ -550,15 +599,19 @@ public:
                 avgMap.at(i,j) = AverageSlope(i,j);
             }
         }
-
         return avgMap;
     }
+    int CheckFlowSlope( const QPoint& p, QPoint* point, double* height, double* slope, double* nslone, int& mask) const;
+    SF2 StreamAreaStreepest() const;
+
 
     //Exportation sous format d'image ! 
     QImage Export(SF2, bool) const;
     QImage Shade(SF2 mapToExport) const {return Export(mapToExport, true);}
 
     void ExportOBJ(char*);
+
+
 
 };
 
@@ -778,6 +831,108 @@ void HeighField::ExportOBJ(char* filename){
 }
 
 
+int HeighField::CheckFlowSlope( const QPoint& p, QPoint* point, double* height, double* slope, double* nslone, int& mask) const {
+
+    int n = 0;
+    double zp = at(p.x(),p.y());
+    double slopesum = 0.0;
+
+    const QPoint next[8] = { QPoint (1,0) ,QPoint (1,1) ,QPoint (0,1) ,QPoint (-1,1) ,QPoint (0,-1) ,QPoint (-1,-1) ,QPoint (-1,0), QPoint (1,-1) };
+    const double length[8] = {1.0 , sqrt(2.0),1.0 , sqrt(2.0),1.0 , sqrt(2.0),1.0 , sqrt(2.0)};
+
+
+    mask = 0;
+    for (int i=0; i<8; i++){
+        QPoint b = p + next[i];
+
+        if(!Box2::Inside(vec2(b.x(),b.y()))){continue;};
+
+        double step = at(b.x(), b.y()) - zp;
+
+        if (step <0.0)
+        {
+            point[n] = b;
+            height[n] = -step;
+            slopesum += slope[n] / length[i];
+            n++;
+            mask |= 1 << i;
+        }
+
+    }
+    for (int k=0; k<n; k++){
+        nslone[k] = slope[k] / slopesum;
+    }
+    return n;
+
+}
+
+SF2 HeighField::StreamAreaStreepest() const{
+
+    //SF2 stream = SF2(Grid2(Box2(a,b),nx,ny),200.0);
+
+    SF2 stream = SF2(Grid2(*this));
+
+    // QVector<ScalarPoint2> QEE = GetScalarPoints();
+    // std::sort(QEE.begin(), QEE.end());
+
+    // for (int i = QEE.size() -1; i>=0; i--){
+        
+    //     // QPoint q = QPoint(2,2);
+    //     // double z = 5;
+    //     // ScalarPoint2 p = ScalarPoint2(q,z);
+    //     // p.Point(); 
+    //     //QEE.at(i).Point();
+    //     QPoint p = QEE.at(i).Point();
+
+    //     QPoint q[8];
+    //     double h[8];
+    //     double s[8];
+    //     double sn[8];
+    //     int m;
+
+    //     int n = CheckFlowSlope(p,q,h,s,sn,m);
+
+    //     if (n>0)
+    //     {
+    //         double ss = s[0];
+    //         int k=0;
+    //         for (int j=1; j<n;j++)
+    //         {
+    //             if (s[j] > ss) {
+    //                 k=j;
+    //                 ss=s[j];
+    //             }
+    //         }
+            
+    //         const double sp = stream.at(p.x(),p.y());
+    //         stream.at(q[k].x(), q[k].y()) += sp;
+    //     }
+
+    // }
+    return stream;
+}
+
+
+
+
+
+
+
+
+/*
+SF2 HeightField::stream_power() const
+{
+    SF2 stream = stream_area();
+    SF2 slope = slope_map();
+    SF2 res(Grid2(*this));
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
+            res.at(i, j) = sqrt(stream.at(i, j)) * slope.at(i, j);
+        }
+    }
+    return res;
+}
+
 /******************************************
 *          Classe LayeredField            *
 ******************************************/
@@ -805,6 +960,7 @@ void Compute_params( HeighField hf, QString s){
     SF2 SLOPE = hf.SlopeMap();
     SF2 AVSLOPE = hf.AVGSlopeMap();
     SF2 ACCESS = hf.accessMap();
+    SF2 StreamTEST = hf.StreamAreaStreepest();
 
     QImage hauteur_phong = hf.Shade(hf);
     QImage hauteur = hf.Export(hf);
@@ -813,6 +969,8 @@ void Compute_params( HeighField hf, QString s){
     QImage slope = hf.Export(SLOPE);
     QImage avslope = hf.Export(AVSLOPE);
     QImage acc = hf.Export(ACCESS);
+    QImage StreamAreaStreepest = hf.Export(StreamTEST);
+
 
     //std::cout <<" hauteur_phong "<<s<< std::endl;
     hauteur_phong.save("Images/hauteur_phong"+s+".png");
@@ -828,6 +986,10 @@ void Compute_params( HeighField hf, QString s){
     avslope.save("Images/avslope"+s+".png");
 
     acc.save("Images/access" + s + ".png");
+
+    StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
+
+
 }
 
 
@@ -856,8 +1018,9 @@ int main (int argc, char *argv[]){
     // hf.Clamp(4, 7);
     // Compute_params(hf, "_Clamp");
 
-    // hf.Smooth();
-    // Compute_params(hf, "_Smooth");
+    hf.Smooth();
+    hf.Smooth();
+    Compute_params(hf, "_Smooth");
 
     // hf.ExportOBJ("Hf.obj");
 
