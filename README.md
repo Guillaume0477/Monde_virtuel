@@ -10,4 +10,5 @@ Le code permettant de visualiser la carte de hauteur en 3D est disponible dans l
 dossier tp_parallax_mapping. Il suffit de modifier les lignes d'appels aux 
 textures pour pouvoir visualiser une carte donnée sur le terrain généré par la carte
 de hauteur ou le fichier .obj créé précédemment. Ce code a été implémenté lors d'un 
-précédent TP à CPE Lyon dans le cours de T. DUPONT. 
+précédent TP à CPE Lyon dans le cours de T. DUPONT. Nous l'avons donc remanié pour 
+qu'il soit utilisable ici.
