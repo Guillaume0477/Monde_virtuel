@@ -468,7 +468,7 @@ SF2 SF2::GradientNorm() const{
         for (int j = 0; j < ny; j++){
             vec2 grad = Gradient(i,j);
             gradNorm.at(i,j) = sqrt(grad*grad);
-            std::cout<<sqrt(grad*grad)<<std::endl;
+            // std::cout<<sqrt(grad*grad)<<std::endl;
         }
     }
 
@@ -943,7 +943,7 @@ SF2 HeighField::StreamAreaStreepest() const{
         //QEE.at(i).Point();
         QPoint p = QEE.at(i).Point();
 
-        std::cout<<"at_p "<<at(p.x(), p.y())<<std::endl;
+        // std::cout<<"at_p "<<at(p.x(), p.y())<<std::endl;
 
 
         
@@ -1027,7 +1027,7 @@ SF2 HeighField::StreamArea() const{
         //QEE.at(i).Point();
         QPoint p = QEE.at(i).Point();
 
-        std::cout<<"at_p "<<at(p.x(), p.y())<<std::endl;
+        // std::cout<<"at_p "<<at(p.x(), p.y())<<std::endl;
 
 
         
@@ -1131,8 +1131,7 @@ public:
 void LayeredField::TermalErosion(int nbEpoch){
 
     double tanTheta = 2000*tan(M_PI/4.0);
-    std::cout << celldiagonal[0] << ' '<< inversecelldiagonal[0] << std::endl;
-    double k = 0.0001;
+    double k = 0.001;
 
     for (int n = 0; n < nbEpoch ; n++){
         std::multimap<double, std::pair<int,int>> myMap;
@@ -1246,18 +1245,18 @@ int main (int argc, char *argv[]){
     im.load("heightmap3.jpeg");
 
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
-    SF2 pente = hf.SlopeMap();
-    pente.UpdateMinMax();
+    // SF2 pente = hf.SlopeMap();
+    // pente.UpdateMinMax();
 
-    hf.Smooth();
-    std::cout << pente.max() << ' ' << pente.min() << std::endl;
-    LayeredField lf = LayeredField(hf, 0.1);
+    // hf.Smooth();
+    // // std::cout << pente.max() << ' ' << pente.min() << std::endl;
+    // LayeredField lf = LayeredField(hf, 0.1);
     
-    lf.TermalErosion(10);
+    // lf.TermalErosion(100);
     
-    HeighField h = lf.toHeighField();
-    std::cout << h.max() << ' ' << h.min() << std::endl;
-    std::cout << hf.max() << ' ' << hf.min() << std::endl;
+    // HeighField h = lf.toHeighField();
+    // std::cout << h.max() << ' ' << h.min() << std::endl;
+    // std::cout << hf.max() << ' ' << hf.min() << std::endl;
     // std::cout << hf.at(422,422) << ' ' << hf.at(422, 423) << std::endl;
     // std::cout << hf.Gradient(422,422) << std::endl;
     // std::cout << pente.at(422, 422) << std::endl;
