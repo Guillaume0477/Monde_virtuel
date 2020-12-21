@@ -1117,8 +1117,65 @@ float fonction_zeros(float lim_inf, float lim_sup,float current_num){
 
 
 
+
+/******************************************
+*              Classe Arbre               *
+******************************************/
+class Sapin
+{
+protected:
+    static const int nombre_attrib = 3;
+    // float humidity;
+    // float slope;
+    // float stream;
+    // double const attrib[nombre_attrib];
+public:
+    double humidity(float hum){
+        double value = fonction_one(0.1,1.0,hum);
+        return (value);
+    };
+    double slope(float slo){
+        double value = fonction_one(0.0,0.3,slo);
+        return (value);
+    };
+    double stream(float str){
+        double value = fonction_one(0.0,0.05,str);
+        return (value);
+    };
+
+
+
+            // double value = fonction_one(0.1,1.0,humidity.at(i,j));
+            // //double value = fonction_one(0.0,0.3,humidity.at(i,j));
+            // res.at(i, j) = std::min(value,res.at(i, j));
+            // std::cout<<"hum"<<humidity.at(i,j)<<std::endl;
+            // std::cout<<"value"<<value<<std::endl;
+            // std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+            // double value2 = fonction_one(0.0,0.3,slope.at(i,j));
+            // //double value2 = fonction_one(0.0,1.0,slope.at(i,j));
+            // res.at(i, j) = std::min(value2,res.at(i, j));
+            // // std::cout<<"slope"<<slope.at(i,j)<<std::endl;
+            // // std::cout<<"value"<<value2<<std::endl;
+            // // std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+
+            // double value3 = fonction_one(0.0,0.05,stream.at(i,j));
+            // //double value3 = fonction_one(0.0,1.0,stream.at(i,j));
+            // res.at(i, j) = std::min(value3,res.at(i, j));
+            // // std::cout<<"stream"<<stream.at(i,j)<<std::endl;
+            // // std::cout<<"value"<<value3<<std::endl;
+            // // std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+
+};
+
+
+
+
 SF2 HeighField::densite_sapin() const{
 
+    Sapin sapin;
     SF2 stream = StreamArea();
     stream.Normalize();
     SF2 humidity = WetNessIndex();
@@ -1136,24 +1193,27 @@ SF2 HeighField::densite_sapin() const{
 
             std::cout<<"res"<<res.at(i, j)<<std::endl;
 
-            double value = fonction_one(0.1,1.0,humidity.at(i,j));
+            //double value = fonction_one(0.1,1.0,humidity.at(i,j));
             //double value = fonction_one(0.0,0.3,humidity.at(i,j));
-            res.at(i, j) = std::min(value,res.at(i, j));
-            std::cout<<"hum"<<humidity.at(i,j)<<std::endl;
-            std::cout<<"value"<<value<<std::endl;
-            std::cout<<"res"<<res.at(i, j)<<std::endl;
+            //res.at(i, j) = std::min(value,res.at(i, j));
+            res.at(i, j) = std::min( sapin.humidity(humidity.at(i,j)) , res.at(i, j) );
+
+            //std::cout<<"hum"<<humidity.at(i,j)<<std::endl;
+            //std::cout<<"value"<<value<<std::endl;
+            //std::cout<<"res"<<res.at(i, j)<<std::endl;
 
             double value2 = fonction_one(0.0,0.3,slope.at(i,j));
             //double value2 = fonction_one(0.0,1.0,slope.at(i,j));
-            res.at(i, j) = std::min(value2,res.at(i, j));
+            res.at(i, j) = std::min( sapin.slope(slope.at(i,j)) , res.at(i, j) );
             // std::cout<<"slope"<<slope.at(i,j)<<std::endl;
-            // std::cout<<"value"<<value2<<std::endl;
+            std::cout<<"value"<<value2<<std::endl;
+            std::cout<<"valuesapin "<<sapin.slope(slope.at(i,j))<<std::endl;
             // std::cout<<"res"<<res.at(i, j)<<std::endl;
 
 
-            double value3 = fonction_one(0.0,0.05,stream.at(i,j));
+            //double value3 = fonction_one(0.0,0.05,stream.at(i,j));
             //double value3 = fonction_one(0.0,1.0,stream.at(i,j));
-            res.at(i, j) = std::min(value3,res.at(i, j));
+            res.at(i, j) = std::min( sapin.stream(stream.at(i,j)) , res.at(i, j) );
             // std::cout<<"stream"<<stream.at(i,j)<<std::endl;
             // std::cout<<"value"<<value3<<std::endl;
             // std::cout<<"res"<<res.at(i, j)<<std::endl;
@@ -1262,7 +1322,6 @@ SF2 HeighField::sapin_raw_distribution(float rayon) const{
 
     return res;
 }
-
 
 
 
