@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <fstream>
 #include <map>
+#include <random>
 
 
 /******************************************
@@ -624,6 +625,8 @@ public:
     SF2 StreamArea() const;
     SF2 StreamPower() const;
     SF2 WetNessIndex() const;
+    SF2 densite_sapin() const;
+    SF2 sapin_raw_distribution(float rayon) const;
 
 
     //Exportation sous format d'image ! 
@@ -1094,6 +1097,172 @@ SF2 HeighField::WetNessIndex() const{
 
 
 
+float fonction_one(float lim_inf, float lim_sup,float current_num){
+    if ((current_num > lim_inf) && (current_num < lim_sup)){
+        return current_num;
+    }
+    else {
+        return 0;
+    }
+}
+
+float fonction_zeros(float lim_inf, float lim_sup,float current_num){
+    if ((current_num > lim_inf) && (current_num < lim_sup)){
+        return current_num;
+    }
+    else {
+        return 1;
+    }
+}
+
+
+
+SF2 HeighField::densite_sapin() const{
+
+    SF2 stream = StreamArea();
+    stream.Normalize();
+    SF2 humidity = WetNessIndex();
+    humidity.Normalize();
+    SF2 slope = SlopeMap();
+    slope.Normalize();
+    SF2 res = SF2(Grid2(Box2(a,b),nx,ny),1.0); //init 1
+    //SF2 res(Grid2(*this));
+    //res.at(0, 0) = 0;
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
+            for (int k=0; k<1; k++){
+
+            std::cout<<"NNNEEEEEEEEWW"<<std::endl;
+
+            std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+            double value = fonction_one(0.1,1.0,humidity.at(i,j));
+            //double value = fonction_one(0.0,0.3,humidity.at(i,j));
+            res.at(i, j) = std::min(value,res.at(i, j));
+            std::cout<<"hum"<<humidity.at(i,j)<<std::endl;
+            std::cout<<"value"<<value<<std::endl;
+            std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+            double value2 = fonction_one(0.0,0.3,slope.at(i,j));
+            //double value2 = fonction_one(0.0,1.0,slope.at(i,j));
+            res.at(i, j) = std::min(value2,res.at(i, j));
+            // std::cout<<"slope"<<slope.at(i,j)<<std::endl;
+            // std::cout<<"value"<<value2<<std::endl;
+            // std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+
+            double value3 = fonction_one(0.0,0.05,stream.at(i,j));
+            //double value3 = fonction_one(0.0,1.0,stream.at(i,j));
+            res.at(i, j) = std::min(value3,res.at(i, j));
+            // std::cout<<"stream"<<stream.at(i,j)<<std::endl;
+            // std::cout<<"value"<<value3<<std::endl;
+            // std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+            std::cout<<"i"<<i<<"j"<<j<<std::endl;
+
+
+
+
+
+                
+            }
+        }
+    }
+    return res;
+}
+
+
+
+
+
+
+bool test_dist(std::pair<int,int> couple1, std::pair<int,int> couple2, float rayon){
+    int diff_x = (couple1.first - couple2.first);
+    int diff_y = (couple1.second - couple2.second);
+    float dist = std::sqrt( diff_x*diff_x + diff_y*diff_y );
+    if (dist < 2*rayon){
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    
+
+}
+
+
+SF2 HeighField::sapin_raw_distribution(float rayon) const{
+
+    SF2 dens = densite_sapin();
+    dens.Normalize();
+
+    SF2 res = SF2(Grid2(Box2(a,b),nx,ny),0.0); //init 0
+    //SF2 res(Grid2(*this));
+
+    std::list<std::pair<int,int>>  arbre;
+
+    for (int k=0; k<10000; k++){
+        int rand_pos_x = rand()%nx;
+        int rand_pos_y = rand()%ny;
+        bool test_dens = false;
+
+        //std::cout<<"irand "<<rand_pos_x<<" jrand "<<rand_pos_y<<std::endl;
+
+
+
+        float rand_test = ((double) rand() / (RAND_MAX));
+        //std::cout<<"rand "<<rand_test<<std::endl;
+
+        if (rand_test <= dens.at(rand_pos_x,rand_pos_y)){
+            test_dens=true;
+            //std::cout<<"test_TRUE "<<std::endl;
+        }
+        else{
+            //std::cout<<"CONTINUE "<<std::endl;
+            continue;
+        }
+
+        bool placement_not_possible = false;
+
+
+        for (std::list<std::pair<int,int>>::iterator it = arbre.begin(); it != arbre.end(); it++){
+            if (test_dist(std::pair<int,int>(rand_pos_x,rand_pos_y),*it,rayon)){
+                placement_not_possible = true;
+                //std::cout<<"NOT_POSSIBLE "<<std::endl;
+                break;
+            }
+            else{
+                //std::cout<<"POSSIBLE "<<std::endl;
+            }
+        }
+
+        // if (!placement_not_possible){
+        //     
+        //     break;
+        // }
+
+        if ((placement_not_possible == false)&&(test_dens == true)){
+            res.at(rand_pos_x, rand_pos_y) = 1;
+            res.at(rand_pos_x+2, rand_pos_y) = 1;
+            res.at(rand_pos_x-2, rand_pos_y) = 1;
+            res.at(rand_pos_x, rand_pos_y+2) = 1;
+            res.at(rand_pos_x, rand_pos_y-2) = 1;
+            res.at(rand_pos_x+1, rand_pos_y) = 1;
+            res.at(rand_pos_x-1, rand_pos_y) = 1;
+            res.at(rand_pos_x, rand_pos_y+1) = 1;
+            res.at(rand_pos_x, rand_pos_y-1) = 1;
+            arbre.push_back(std::pair<int,int>(rand_pos_x,rand_pos_y));
+            std::cout<<"ARBRE "<<std::endl;
+        }
+
+
+
+    }
+
+    return res;
+}
+
 
 
 
@@ -1197,48 +1366,54 @@ void LayeredField::TermalErosion(int nbEpoch){
 
 void Compute_params( HeighField hf, QString s){
 
-    SF2 GRAD = hf.GradientNorm();
-    SF2 LAP = hf.LaplacianMap();
-    SF2 SLOPE = hf.SlopeMap();
-    SF2 AVSLOPE = hf.AVGSlopeMap();
-    SF2 ACCESS = hf.accessMap();
-    SF2 AreaStreepest = hf.StreamAreaStreepest();
-    SF2 Area = hf.StreamArea();
-    SF2 Power = hf.StreamPower();
+    // SF2 GRAD = hf.GradientNorm();
+    // SF2 LAP = hf.LaplacianMap();
+    // SF2 SLOPE = hf.SlopeMap();
+    // SF2 AVSLOPE = hf.AVGSlopeMap();
+    // SF2 ACCESS = hf.accessMap();
+    // SF2 AreaStreepest = hf.StreamAreaStreepest();
+    // SF2 Area = hf.StreamArea();
+    // SF2 Power = hf.StreamPower();
     SF2 WET = hf.WetNessIndex();
+    SF2 SAPIN = hf.densite_sapin();
+    SF2 DISTRI = hf.sapin_raw_distribution(3.0);
 
-    QImage hauteur_phong = hf.Shade(hf);
-    QImage hauteur = hf.Export(hf);
-    QImage gradient = hf.Export(GRAD);
-    QImage laplacian = hf.Export(LAP);
-    QImage slope = hf.Export(SLOPE);
-    QImage avslope = hf.Export(AVSLOPE);
-    QImage acc = hf.Export(ACCESS);
-    QImage StreamAreaStreepest = hf.Export(AreaStreepest);
-    QImage StreamArea = hf.Export(Area);
-    QImage StreamPower = hf.Export(Power);
+    // QImage hauteur_phong = hf.Shade(hf);
+    // QImage hauteur = hf.Export(hf);
+    // QImage gradient = hf.Export(GRAD);
+    // QImage laplacian = hf.Export(LAP);
+    // QImage slope = hf.Export(SLOPE);
+    // QImage avslope = hf.Export(AVSLOPE);
+    // QImage acc = hf.Export(ACCESS);
+    // QImage StreamAreaStreepest = hf.Export(AreaStreepest);
+    // QImage StreamArea = hf.Export(Area);
+    // QImage StreamPower = hf.Export(Power);
     QImage WetNessIndex = hf.Export(WET);
+    QImage densite_sapin = hf.Export(SAPIN);
+    QImage sapin_raw_distribution = hf.Export(DISTRI);
 
 
-    //std::cout <<" hauteur_phong "<<s<< std::endl;
-    hauteur_phong.save("Images/hauteur_phong"+s+".png");
-    //std::cout <<" hauteur "<<s<< std::endl;
-    hauteur.save("Images/hauteur"+s+".png");
-    //std::cout <<" gradient "<<s<< std::endl;
-    gradient.save("Images/gradient"+s+".png");
-    //std::cout <<" laplacian "<<s<< std::endl;
-    laplacian.save("Images/lapla"+s+".png");
-    //std::cout <<" slope "<<s<< std::endl;
-    slope.save("Images/slope"+s+".png");
-    //std::cout <<" avslope "<<s<< std::endl;
-    avslope.save("Images/avslope"+s+".png");
+    // //std::cout <<" hauteur_phong "<<s<< std::endl;
+    // hauteur_phong.save("Images/hauteur_phong"+s+".png");
+    // //std::cout <<" hauteur "<<s<< std::endl;
+    // hauteur.save("Images/hauteur"+s+".png");
+    // //std::cout <<" gradient "<<s<< std::endl;
+    // gradient.save("Images/gradient"+s+".png");
+    // //std::cout <<" laplacian "<<s<< std::endl;
+    // laplacian.save("Images/lapla"+s+".png");
+    // //std::cout <<" slope "<<s<< std::endl;
+    // slope.save("Images/slope"+s+".png");
+    // //std::cout <<" avslope "<<s<< std::endl;
+    // avslope.save("Images/avslope"+s+".png");
 
-    acc.save("Images/access" + s + ".png");
+    // acc.save("Images/access" + s + ".png");
 
-    StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
-    StreamArea.save("Images/StreamArea"+s+".png");
-    StreamPower.save("Images/StreamPower"+s+".png");
+    // StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
+    // StreamArea.save("Images/StreamArea"+s+".png");
+    // StreamPower.save("Images/StreamPower"+s+".png");
     WetNessIndex.save("Images/WetNessIndex"+s+".png");
+    densite_sapin.save("Images/densite_sapin"+s+".png");
+    sapin_raw_distribution.save("Images/sapin_raw_distribution"+s+".png");
 
 
 }
@@ -1263,7 +1438,7 @@ int main (int argc, char *argv[]){
     im.load("heightmap3.jpeg");
     //im.load("montagne.png");
 
-    HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(1,1)), im.width(), im.height());
+    HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(500,500)), im.width(), im.height());
     // SF2 pente = hf.SlopeMap();
     // pente.UpdateMinMax();
 
@@ -1284,13 +1459,12 @@ int main (int argc, char *argv[]){
     // std::cout << hf.Gradient(422,422) << std::endl;
     // std::cout << pente.at(422, 422) << std::endl;
 
-    Compute_params(hf, "");
+    //Compute_params(hf, "");
 
 
     // hf.Clamp(4, 7);
     // Compute_params(hf, "_Clamp");
 
-    hf.Smooth();
     hf.Smooth();
     Compute_params(hf, "_Smooth");
 
