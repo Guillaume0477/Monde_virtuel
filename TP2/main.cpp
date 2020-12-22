@@ -552,6 +552,131 @@ QVector<ScalarPoint2> SF2::GetScalarPoints() const
     return e;
 };
 
+
+
+float fonction_one(float lim_inf, float lim_sup,float current_num){
+    if ((current_num > lim_inf) && (current_num < lim_sup)){
+        return current_num;
+    }
+    else {
+        return 0;
+    }
+}
+
+float fonction_zeros(float lim_inf, float lim_sup,float current_num){
+    if ((current_num > lim_inf) && (current_num < lim_sup)){
+        return current_num;
+    }
+    else {
+        return 1;
+    }
+}
+
+
+
+
+/******************************************
+*              Classe Arbre               *
+******************************************/
+class Arbre
+{
+protected:
+    int nombre_attrib;
+    int rayon;
+public:
+    Arbre(){
+        rayon = 10; 
+        nombre_attrib = 3;
+    };
+    Arbre(const int nb, const int r){
+        rayon = r; 
+        nombre_attrib= nb;
+    };
+    double get_rayon() const {
+        // std::cout<<"111"<<std::endl;
+        return rayon;
+    }
+    virtual double humidity(double hum){
+        std::cout<<"111"<<std::endl;
+        return hum;
+    };
+    virtual double slope(double slo){
+        std::cout<<"111"<<std::endl;
+        return slo;
+    };
+    virtual double stream(double str){
+        std::cout<<"111"<<std::endl;
+        return str;
+    };
+
+};
+
+
+
+/******************************************
+*              Classe Sapin               *
+******************************************/
+class Sapin : public Arbre
+{
+protected:
+    // static int nombre_attrib;
+    // static int rayon;
+    // float humidity;
+    // float slope;
+    // float stream;
+    // double const attrib[nombre_attrib];
+public:
+    Sapin(){
+        Arbre(3,3);
+    };
+    double humidity(double hum){
+        double value = fonction_one(0.1,1.0,hum);
+        return (value);
+    };
+    double slope(double slo){
+        double value = fonction_one(0.0,0.3,slo);
+        return (value);
+    };
+    double stream(double str){
+        double value = fonction_one(0.0,0.05,str);
+        return (value);
+    };
+
+};
+
+/******************************************
+*             Classe Buisson              *
+******************************************/
+class Buisson : public Arbre
+{
+protected:
+    // float humidity;
+    // float slope;
+    // float stream;
+    // double const attrib[nombre_attrib];
+public:
+    Buisson(){
+        Arbre(3,1);
+    };
+    double humidity(double hum){
+        double value = fonction_one(0.0,0.1,hum);
+        return (value);
+    };
+    double slope(double slo){
+        double value = fonction_one(0.0,0.3,slo);
+        return (value);
+    };
+    double stream(double str){
+        double value = fonction_one(0.0,0.05,str);
+        return (value);
+    };
+
+};
+
+
+
+
+
 /******************************************
 *           Classe HeighField2            *
 ******************************************/
@@ -625,8 +750,11 @@ public:
     SF2 StreamArea() const;
     SF2 StreamPower() const;
     SF2 WetNessIndex() const;
+    //SF2 densite_sapin(Arbre arbre) const;
+    SF2 densite_arbre(Arbre& arbre) const; //not working
     SF2 densite_sapin() const;
-    SF2 sapin_raw_distribution(float rayon) const;
+    SF2 densite_buisson() const;
+    SF2 sapin_raw_distribution() const;
 
 
     //Exportation sous format d'image ! 
@@ -1097,85 +1225,9 @@ SF2 HeighField::WetNessIndex() const{
 
 
 
-float fonction_one(float lim_inf, float lim_sup,float current_num){
-    if ((current_num > lim_inf) && (current_num < lim_sup)){
-        return current_num;
-    }
-    else {
-        return 0;
-    }
-}
-
-float fonction_zeros(float lim_inf, float lim_sup,float current_num){
-    if ((current_num > lim_inf) && (current_num < lim_sup)){
-        return current_num;
-    }
-    else {
-        return 1;
-    }
-}
+SF2 HeighField::densite_arbre(Arbre& arbre) const{
 
 
-
-
-/******************************************
-*              Classe Arbre               *
-******************************************/
-class Sapin
-{
-protected:
-    static const int nombre_attrib = 3;
-    // float humidity;
-    // float slope;
-    // float stream;
-    // double const attrib[nombre_attrib];
-public:
-    double humidity(float hum){
-        double value = fonction_one(0.1,1.0,hum);
-        return (value);
-    };
-    double slope(float slo){
-        double value = fonction_one(0.0,0.3,slo);
-        return (value);
-    };
-    double stream(float str){
-        double value = fonction_one(0.0,0.05,str);
-        return (value);
-    };
-
-
-
-            // double value = fonction_one(0.1,1.0,humidity.at(i,j));
-            // //double value = fonction_one(0.0,0.3,humidity.at(i,j));
-            // res.at(i, j) = std::min(value,res.at(i, j));
-            // std::cout<<"hum"<<humidity.at(i,j)<<std::endl;
-            // std::cout<<"value"<<value<<std::endl;
-            // std::cout<<"res"<<res.at(i, j)<<std::endl;
-
-            // double value2 = fonction_one(0.0,0.3,slope.at(i,j));
-            // //double value2 = fonction_one(0.0,1.0,slope.at(i,j));
-            // res.at(i, j) = std::min(value2,res.at(i, j));
-            // // std::cout<<"slope"<<slope.at(i,j)<<std::endl;
-            // // std::cout<<"value"<<value2<<std::endl;
-            // // std::cout<<"res"<<res.at(i, j)<<std::endl;
-
-
-            // double value3 = fonction_one(0.0,0.05,stream.at(i,j));
-            // //double value3 = fonction_one(0.0,1.0,stream.at(i,j));
-            // res.at(i, j) = std::min(value3,res.at(i, j));
-            // // std::cout<<"stream"<<stream.at(i,j)<<std::endl;
-            // // std::cout<<"value"<<value3<<std::endl;
-            // // std::cout<<"res"<<res.at(i, j)<<std::endl;
-
-
-};
-
-
-
-
-SF2 HeighField::densite_sapin() const{
-
-    Sapin sapin;
     SF2 stream = StreamArea();
     stream.Normalize();
     SF2 humidity = WetNessIndex();
@@ -1185,6 +1237,67 @@ SF2 HeighField::densite_sapin() const{
     SF2 res = SF2(Grid2(Box2(a,b),nx,ny),1.0); //init 1
     //SF2 res(Grid2(*this));
     //res.at(0, 0) = 0;
+    int rayon = arbre.get_rayon();
+
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
+            for (int k=0; k<1; k++){
+
+            std::cout<<"NNNEEEEEEEEWW"<<std::endl;
+
+            std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+            //double value = fonction_one(0.1,1.0,humidity.at(i,j));
+            //double value = fonction_one(0.0,0.3,humidity.at(i,j));
+            //res.at(i, j) = std::min(value,res.at(i, j));
+            res.at(i, j) = std::min( arbre.humidity(humidity.at(i,j)) , res.at(i, j) );
+
+            //std::cout<<"hum"<<humidity.at(i,j)<<std::endl;
+            //std::cout<<"value"<<value<<std::endl;
+            //std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+            //double value2 = fonction_one(0.0,0.3,slope.at(i,j));
+            //double value2 = fonction_one(0.0,1.0,slope.at(i,j));
+            res.at(i, j) = std::min( arbre.slope(slope.at(i,j)) , res.at(i, j) );
+            // std::cout<<"slope"<<slope.at(i,j)<<std::endl;
+            //std::cout<<"value"<<value2<<std::endl;
+            //std::cout<<"valuesapin "<<sapin.slope(slope.at(i,j))<<std::endl;
+            // std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+
+            //double value3 = fonction_one(0.0,0.05,stream.at(i,j));
+            //double value3 = fonction_one(0.0,1.0,stream.at(i,j));
+            res.at(i, j) = std::min( arbre.stream(stream.at(i,j)) , res.at(i, j) );
+            // std::cout<<"stream"<<stream.at(i,j)<<std::endl;
+            // std::cout<<"value"<<value3<<std::endl;
+            // std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+            std::cout<<"i"<<i<<"j"<<j<<std::endl;
+                
+            }
+        }
+    }
+    return res;
+}
+
+
+
+SF2 HeighField::densite_sapin() const{
+
+    Sapin sapin = Sapin();
+    //Arbre sapin = Arbre();
+
+    SF2 stream = StreamArea();
+    stream.Normalize();
+    SF2 humidity = WetNessIndex();
+    humidity.Normalize();
+    SF2 slope = SlopeMap();
+    slope.Normalize();
+    SF2 res = SF2(Grid2(Box2(a,b),nx,ny),1.0); //init 1
+    //SF2 res(Grid2(*this));
+    //res.at(0, 0) = 0;
+    int rayon = sapin.get_rayon();
+
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < ny; ++j) {
             for (int k=0; k<1; k++){
@@ -1202,12 +1315,12 @@ SF2 HeighField::densite_sapin() const{
             //std::cout<<"value"<<value<<std::endl;
             //std::cout<<"res"<<res.at(i, j)<<std::endl;
 
-            double value2 = fonction_one(0.0,0.3,slope.at(i,j));
+            //double value2 = fonction_one(0.0,0.3,slope.at(i,j));
             //double value2 = fonction_one(0.0,1.0,slope.at(i,j));
             res.at(i, j) = std::min( sapin.slope(slope.at(i,j)) , res.at(i, j) );
             // std::cout<<"slope"<<slope.at(i,j)<<std::endl;
-            std::cout<<"value"<<value2<<std::endl;
-            std::cout<<"valuesapin "<<sapin.slope(slope.at(i,j))<<std::endl;
+            //std::cout<<"value"<<value2<<std::endl;
+            //std::cout<<"valuesapin "<<sapin.slope(slope.at(i,j))<<std::endl;
             // std::cout<<"res"<<res.at(i, j)<<std::endl;
 
 
@@ -1219,11 +1332,6 @@ SF2 HeighField::densite_sapin() const{
             // std::cout<<"res"<<res.at(i, j)<<std::endl;
 
             std::cout<<"i"<<i<<"j"<<j<<std::endl;
-
-
-
-
-
                 
             }
         }
@@ -1231,6 +1339,65 @@ SF2 HeighField::densite_sapin() const{
     return res;
 }
 
+
+
+
+SF2 HeighField::densite_buisson() const{
+
+    Buisson buisson = Buisson();
+
+    SF2 stream = StreamArea();
+    stream.Normalize();
+    SF2 humidity = WetNessIndex();
+    humidity.Normalize();
+    SF2 slope = SlopeMap();
+    slope.Normalize();
+    SF2 res = SF2(Grid2(Box2(a,b),nx,ny),1.0); //init 1
+    //SF2 res(Grid2(*this));
+    //res.at(0, 0) = 0;
+    int rayon = buisson.get_rayon();
+
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
+            for (int k=0; k<1; k++){
+
+            std::cout<<"NNNEEEEEEEEWW"<<std::endl;
+
+            std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+            //double value = fonction_one(0.1,1.0,humidity.at(i,j));
+            //double value = fonction_one(0.0,0.3,humidity.at(i,j));
+            //res.at(i, j) = std::min(value,res.at(i, j));
+            res.at(i, j) = std::min( buisson.humidity(humidity.at(i,j)) , res.at(i, j) );
+
+            //std::cout<<"hum"<<humidity.at(i,j)<<std::endl;
+            //std::cout<<"value"<<value<<std::endl;
+            //std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+            //double value2 = fonction_one(0.0,0.3,slope.at(i,j));
+            //double value2 = fonction_one(0.0,1.0,slope.at(i,j));
+            res.at(i, j) = std::min( buisson.slope(slope.at(i,j)) , res.at(i, j) );
+            // std::cout<<"slope"<<slope.at(i,j)<<std::endl;
+            //std::cout<<"value"<<value2<<std::endl;
+            //std::cout<<"valuesapin "<<sapin.slope(slope.at(i,j))<<std::endl;
+            // std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+
+            //double value3 = fonction_one(0.0,0.05,stream.at(i,j));
+            //double value3 = fonction_one(0.0,1.0,stream.at(i,j));
+            res.at(i, j) = std::min( buisson.stream(stream.at(i,j)) , res.at(i, j) );
+            // std::cout<<"stream"<<stream.at(i,j)<<std::endl;
+            // std::cout<<"value"<<value3<<std::endl;
+            // std::cout<<"res"<<res.at(i, j)<<std::endl;
+
+            std::cout<<"i"<<i<<"j"<<j<<std::endl;
+
+                
+            }
+        }
+    }
+    return res;
+}
 
 
 
@@ -1252,20 +1419,109 @@ bool test_dist(std::pair<int,int> couple1, std::pair<int,int> couple2, float ray
 }
 
 
-SF2 HeighField::sapin_raw_distribution(float rayon) const{
+// SF2 HeighField::sapin_raw_distribution() const{
 
-    SF2 dens = densite_sapin();
-    dens.Normalize();
+    
+//     Sapin sapin = Sapin();
+//     SF2 dens_sapin = densite_sapin();
+//     dens_sapin.Normalize();
+
+//     // Buisson sapin = Buisson();
+//     // SF2 dens_sapin = densite_buisson();
+//     // dens_sapin.Normalize();
+
+//     int rayon_sapin = 3.0;
+
+//     SF2 res = SF2(Grid2(Box2(a,b),nx,ny),0.0); //init 0
+//     //SF2 res(Grid2(*this));
+
+//     std::list<std::pair<int,int>>  list_arbre;
+
+//     for (int k=0; k<10000; k++){
+//         int rand_pos_x = rand()%nx;
+//         int rand_pos_y = rand()%ny;
+//         bool test_dens_sapin = false;
+
+//         //std::cout<<"irand "<<rand_pos_x<<" jrand "<<rand_pos_y<<std::endl;
+
+
+
+//         float rand_test = ((double) rand() / (RAND_MAX));
+//         //std::cout<<"rand "<<rand_test<<std::endl;
+
+//         if (rand_test <= dens_sapin.at(rand_pos_x,rand_pos_y)){
+//             test_dens_sapin=true;
+//             //std::cout<<"test_TRUE "<<std::endl;
+//         }
+//         else{
+//             //std::cout<<"CONTINUE "<<std::endl;
+//             continue;
+//         }
+
+//         bool placement_not_possible = false;
+
+
+//         for (std::list<std::pair<int,int>>::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+//             if (test_dist(std::pair<int,int>(rand_pos_x,rand_pos_y),*it,rayon_sapin)){
+//                 placement_not_possible = true;
+//                 //std::cout<<"NOT_POSSIBLE "<<std::endl;
+//                 break;
+//             }
+//             else{
+//                 //std::cout<<"POSSIBLE "<<std::endl;
+//             }
+//         }
+
+//         // if (!placement_not_possible){
+//         //     
+//         //     break;
+//         // }
+
+//         if ((placement_not_possible == false)&&(test_dens_sapin == true)){
+//             res.at(rand_pos_x, rand_pos_y) = 1;
+//             res.at(rand_pos_x+2, rand_pos_y) = 1;
+//             res.at(rand_pos_x-2, rand_pos_y) = 1;
+//             res.at(rand_pos_x, rand_pos_y+2) = 1;
+//             res.at(rand_pos_x, rand_pos_y-2) = 1;
+//             res.at(rand_pos_x+1, rand_pos_y) = 1;
+//             res.at(rand_pos_x-1, rand_pos_y) = 1;
+//             res.at(rand_pos_x, rand_pos_y+1) = 1;
+//             res.at(rand_pos_x, rand_pos_y-1) = 1;
+//             list_arbre.push_back(std::pair<int,int>(rand_pos_x,rand_pos_y));
+//             std::cout<<"ARBRE "<<std::endl;
+//         }
+
+
+
+//     }
+
+//     return res;
+// }
+
+
+
+SF2 HeighField::sapin_raw_distribution() const{
+
+    
+    Sapin sapin;
+    SF2 dens_sapin = densite_sapin();
+    dens_sapin.Normalize();
+
+    // Buisson sapin;
+    // SF2 dens_sapin = densite_buisson();
+    // dens_sapin.Normalize();
+
+    int rayon_sapin = 3.0;
 
     SF2 res = SF2(Grid2(Box2(a,b),nx,ny),0.0); //init 0
     //SF2 res(Grid2(*this));
 
-    std::list<std::pair<int,int>>  arbre;
+    std::list<std::pair<int,int>>  list_arbre;
 
     for (int k=0; k<10000; k++){
         int rand_pos_x = rand()%nx;
         int rand_pos_y = rand()%ny;
-        bool test_dens = false;
+        bool test_dens_sapin = false;
 
         //std::cout<<"irand "<<rand_pos_x<<" jrand "<<rand_pos_y<<std::endl;
 
@@ -1274,8 +1530,8 @@ SF2 HeighField::sapin_raw_distribution(float rayon) const{
         float rand_test = ((double) rand() / (RAND_MAX));
         //std::cout<<"rand "<<rand_test<<std::endl;
 
-        if (rand_test <= dens.at(rand_pos_x,rand_pos_y)){
-            test_dens=true;
+        if (rand_test <= dens_sapin.at(rand_pos_x,rand_pos_y)){
+            test_dens_sapin=true;
             //std::cout<<"test_TRUE "<<std::endl;
         }
         else{
@@ -1286,8 +1542,8 @@ SF2 HeighField::sapin_raw_distribution(float rayon) const{
         bool placement_not_possible = false;
 
 
-        for (std::list<std::pair<int,int>>::iterator it = arbre.begin(); it != arbre.end(); it++){
-            if (test_dist(std::pair<int,int>(rand_pos_x,rand_pos_y),*it,rayon)){
+        for (std::list<std::pair<int,int>>::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+            if (test_dist(std::pair<int,int>(rand_pos_x,rand_pos_y),*it,rayon_sapin)){
                 placement_not_possible = true;
                 //std::cout<<"NOT_POSSIBLE "<<std::endl;
                 break;
@@ -1302,7 +1558,7 @@ SF2 HeighField::sapin_raw_distribution(float rayon) const{
         //     break;
         // }
 
-        if ((placement_not_possible == false)&&(test_dens == true)){
+        if ((placement_not_possible == false)&&(test_dens_sapin == true)){
             res.at(rand_pos_x, rand_pos_y) = 1;
             res.at(rand_pos_x+2, rand_pos_y) = 1;
             res.at(rand_pos_x-2, rand_pos_y) = 1;
@@ -1312,7 +1568,7 @@ SF2 HeighField::sapin_raw_distribution(float rayon) const{
             res.at(rand_pos_x-1, rand_pos_y) = 1;
             res.at(rand_pos_x, rand_pos_y+1) = 1;
             res.at(rand_pos_x, rand_pos_y-1) = 1;
-            arbre.push_back(std::pair<int,int>(rand_pos_x,rand_pos_y));
+            list_arbre.push_back(std::pair<int,int>(rand_pos_x,rand_pos_y));
             std::cout<<"ARBRE "<<std::endl;
         }
 
@@ -1322,8 +1578,6 @@ SF2 HeighField::sapin_raw_distribution(float rayon) const{
 
     return res;
 }
-
-
 
 
 
@@ -1434,8 +1688,14 @@ void Compute_params( HeighField hf, QString s){
     // SF2 Area = hf.StreamArea();
     // SF2 Power = hf.StreamPower();
     SF2 WET = hf.WetNessIndex();
+
     SF2 SAPIN = hf.densite_sapin();
-    SF2 DISTRI = hf.sapin_raw_distribution(3.0);
+    SF2 BUISSON = hf.densite_buisson();
+    Sapin arbre = Sapin();
+    Buisson buisson = Buisson();
+    SF2 ARBRE = hf.densite_arbre(buisson);
+
+    SF2 DISTRI = hf.sapin_raw_distribution();
 
     // QImage hauteur_phong = hf.Shade(hf);
     // QImage hauteur = hf.Export(hf);
@@ -1449,6 +1709,9 @@ void Compute_params( HeighField hf, QString s){
     // QImage StreamPower = hf.Export(Power);
     QImage WetNessIndex = hf.Export(WET);
     QImage densite_sapin = hf.Export(SAPIN);
+    QImage densite_buisson = hf.Export(BUISSON);
+    QImage densite_arbre = hf.Export(ARBRE);
+
     QImage sapin_raw_distribution = hf.Export(DISTRI);
 
 
@@ -1472,6 +1735,8 @@ void Compute_params( HeighField hf, QString s){
     // StreamPower.save("Images/StreamPower"+s+".png");
     WetNessIndex.save("Images/WetNessIndex"+s+".png");
     densite_sapin.save("Images/densite_sapin"+s+".png");
+    densite_buisson.save("Images/densite_buisson"+s+".png");
+    densite_arbre.save("Images/densite_arbre"+s+".png");
     sapin_raw_distribution.save("Images/sapin_raw_distribution"+s+".png");
 
 
