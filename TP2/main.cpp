@@ -627,7 +627,8 @@ protected:
     // double const attrib[nombre_attrib];
 public:
     Sapin(){
-        Arbre(3,3);
+        rayon = 3;
+        nombre_attrib = 3;
     };
     double get_rayon() const {
         std::cout<<"222"<<std::endl;
@@ -660,7 +661,8 @@ protected:
     // double const attrib[nombre_attrib];
 public:
     Buisson(){
-        Arbre(3,1);
+        rayon = 1;
+        nombre_attrib = 3;
     };
     double get_rayon() const {
         std::cout<<"333"<<std::endl;
