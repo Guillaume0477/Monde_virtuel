@@ -585,16 +585,16 @@ protected:
     int rayon;
 public:
     Arbre(){
-        rayon = 10; 
+        rayon = 3; 
         nombre_attrib = 3;
     };
     Arbre(const int nb, const int r){
-        rayon = r; 
         nombre_attrib= nb;
+        rayon = r; 
     };
-    double get_rayon() const {
+    virtual double get_rayon() const {
         // std::cout<<"111"<<std::endl;
-        return rayon;
+        // return rayon;
     }
     virtual double humidity(double hum){
         std::cout<<"111"<<std::endl;
@@ -629,6 +629,10 @@ public:
     Sapin(){
         Arbre(3,3);
     };
+    double get_rayon() const {
+        std::cout<<"222"<<std::endl;
+        return rayon;
+    }
     double humidity(double hum){
         double value = fonction_one(0.1,1.0,hum);
         return (value);
@@ -658,6 +662,10 @@ public:
     Buisson(){
         Arbre(3,1);
     };
+    double get_rayon() const {
+        std::cout<<"333"<<std::endl;
+        return rayon;
+    }
     double humidity(double hum){
         double value = fonction_one(0.0,0.1,hum);
         return (value);
@@ -755,6 +763,7 @@ public:
     SF2 densite_sapin() const;
     SF2 densite_buisson() const;
     SF2 sapin_raw_distribution() const;
+    SF2 raw_distribution(Arbre& arbre) const;
 
 
     //Exportation sous format d'image ! 
@@ -1581,6 +1590,90 @@ SF2 HeighField::sapin_raw_distribution() const{
 
 
 
+SF2 HeighField::raw_distribution(Arbre& arbre) const{
+
+    
+    SF2 dens_arbre = densite_arbre(arbre);
+    dens_arbre.Normalize();
+
+    // Buisson sapin;
+    // SF2 dens_sapin = densite_buisson();
+    // dens_sapin.Normalize();
+
+    int rayon_arbre = arbre.get_rayon();
+    std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
+    std::cout<<rayon_arbre<<std::endl;
+    std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
+    
+
+    SF2 res = SF2(Grid2(Box2(a,b),nx,ny),0.0); //init 0
+    //SF2 res(Grid2(*this));
+
+    std::list<std::pair<int,int>>  list_arbre;
+
+    for (int k=0; k<10000; k++){
+        int rand_pos_x = rand()%nx;
+        int rand_pos_y = rand()%ny;
+        bool test_dens_sapin = false;
+
+        //std::cout<<"irand "<<rand_pos_x<<" jrand "<<rand_pos_y<<std::endl;
+
+
+
+        float rand_test = ((double) rand() / (RAND_MAX));
+        //std::cout<<"rand "<<rand_test<<std::endl;
+
+        if (rand_test <= dens_arbre.at(rand_pos_x,rand_pos_y)){
+            test_dens_sapin=true;
+            //std::cout<<"test_TRUE "<<std::endl;
+        }
+        else{
+            //std::cout<<"CONTINUE "<<std::endl;
+            continue;
+        }
+
+        bool placement_not_possible = false;
+
+
+        for (std::list<std::pair<int,int>>::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+            if (test_dist(std::pair<int,int>(rand_pos_x,rand_pos_y),*it,rayon_arbre)){
+                placement_not_possible = true;
+                //std::cout<<"NOT_POSSIBLE "<<std::endl;
+                break;
+            }
+            else{
+                //std::cout<<"POSSIBLE "<<std::endl;
+            }
+        }
+
+        // if (!placement_not_possible){
+        //     
+        //     break;
+        // }
+
+        if ((placement_not_possible == false)&&(test_dens_sapin == true)){
+            res.at(rand_pos_x, rand_pos_y) = 1;
+            res.at(rand_pos_x+2, rand_pos_y) = 1;
+            res.at(rand_pos_x-2, rand_pos_y) = 1;
+            res.at(rand_pos_x, rand_pos_y+2) = 1;
+            res.at(rand_pos_x, rand_pos_y-2) = 1;
+            res.at(rand_pos_x+1, rand_pos_y) = 1;
+            res.at(rand_pos_x-1, rand_pos_y) = 1;
+            res.at(rand_pos_x, rand_pos_y+1) = 1;
+            res.at(rand_pos_x, rand_pos_y-1) = 1;
+            list_arbre.push_back(std::pair<int,int>(rand_pos_x,rand_pos_y));
+            std::cout<<"ARBRE "<<std::endl;
+        }
+
+
+
+    }
+
+    return res;
+}
+
+
+
 /******************************************
 *          Classe LayeredField            *
 ******************************************/
@@ -1689,13 +1782,27 @@ void Compute_params( HeighField hf, QString s){
     // SF2 Power = hf.StreamPower();
     SF2 WET = hf.WetNessIndex();
 
-    SF2 SAPIN = hf.densite_sapin();
-    SF2 BUISSON = hf.densite_buisson();
-    Sapin arbre = Sapin();
+    // SF2 SAPIN = hf.densite_sapin();
+    // SF2 BUISSON = hf.densite_buisson();
+    Sapin sapin = Sapin();
     Buisson buisson = Buisson();
-    SF2 ARBRE = hf.densite_arbre(buisson);
 
-    SF2 DISTRI = hf.sapin_raw_distribution();
+    //SF2 SAPIN = hf.densite_arbre(sapin);
+    //SF2 SAPIN2 = hf.densite_sapin();
+    SF2 BUISSON = hf.densite_arbre(buisson);
+    //SF2 BUISSON2 = hf.densite_buisson();
+    SF2 BUISSON3 = hf.densite_arbre(buisson);
+    //SF2 DISTRI_SAPIN = hf.raw_distribution(sapin);
+    //QImage densite_buisson2 = hf.Export(BUISSON2);
+    //densite_buisson2.save("Images/densite_buisson2"+s+".png");
+    QImage densite_buisson3 = hf.Export(BUISSON3);
+    densite_buisson3.save("Images/densite_buisson3"+s+".png");
+    SF2 DISTRI_BUISSON = hf.raw_distribution(buisson);
+    // //todo
+    // SF2 DISTRI = hf.arbre_raw_distribution(SAPIN);
+    // //todo
+    // SF2 DISTRI = hf.double_raw_distribution(SAPIN,BUISSON);
+
 
     // QImage hauteur_phong = hf.Shade(hf);
     // QImage hauteur = hf.Export(hf);
@@ -1708,11 +1815,17 @@ void Compute_params( HeighField hf, QString s){
     // QImage StreamArea = hf.Export(Area);
     // QImage StreamPower = hf.Export(Power);
     QImage WetNessIndex = hf.Export(WET);
-    QImage densite_sapin = hf.Export(SAPIN);
-    QImage densite_buisson = hf.Export(BUISSON);
-    QImage densite_arbre = hf.Export(ARBRE);
+    //QImage densite_sapin = hf.Export(SAPIN);
+    //QImage densite_sapin2 = hf.Export(SAPIN2);
 
-    QImage sapin_raw_distribution = hf.Export(DISTRI);
+    //QImage sapin_raw_distribution = hf.Export(DISTRI_SAPIN);
+    QImage densite_buisson = hf.Export(BUISSON);
+    
+    QImage buisson_raw_distribution = hf.Export(DISTRI_BUISSON);
+
+    //QImage densite_arbre = hf.Export(ARBRE);
+
+    //QImage sapin_raw_distribution = hf.Export(DISTRI);
 
 
     // //std::cout <<" hauteur_phong "<<s<< std::endl;
@@ -1734,10 +1847,13 @@ void Compute_params( HeighField hf, QString s){
     // StreamArea.save("Images/StreamArea"+s+".png");
     // StreamPower.save("Images/StreamPower"+s+".png");
     WetNessIndex.save("Images/WetNessIndex"+s+".png");
-    densite_sapin.save("Images/densite_sapin"+s+".png");
+    //densite_sapin.save("Images/densite_sapin"+s+".png");
     densite_buisson.save("Images/densite_buisson"+s+".png");
-    densite_arbre.save("Images/densite_arbre"+s+".png");
-    sapin_raw_distribution.save("Images/sapin_raw_distribution"+s+".png");
+    //densite_sapin2.save("Images/densite_sapin2"+s+".png");
+    
+    //densite_arbre.save("Images/densite_arbre"+s+".png");
+    //sapin_raw_distribution.save("Images/sapin_raw_distribution"+s+".png");
+    buisson_raw_distribution.save("Images/buisson_raw_distribution"+s+".png");
 
 
 }
