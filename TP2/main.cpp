@@ -750,6 +750,7 @@ public:
     SF2 densite_sapin() const;
     SF2 densite_buisson() const;
     SF2 sapin_raw_distribution() const;
+    SF2 raw_dart_throwing(Arbre& arbre) const;
     SF2 raw_distribution(Arbre& arbre) const;
     SF2 double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const;
 
@@ -1279,6 +1280,82 @@ bool test_dist(std::pair< std::pair<int,int> , int> couple1, std::pair< std::pai
 }
 
 
+
+SF2 HeighField::raw_dart_throwing(Arbre& arbre) const{
+
+    
+    SF2 dens_arbre = densite_arbre(arbre);
+    dens_arbre.Normalize();
+
+    int rayon_arbre = arbre.get_rayon();
+    std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
+    std::cout<<rayon_arbre<<std::endl;
+    std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
+    
+
+    SF2 res = SF2(Grid2(Box2(a,b),nx,ny),0.0); //init 0
+
+    std::list< std::pair< std::pair<int,int> , int > >  list_arbre;
+
+    for (int k=0; k<100000; k++){
+        int rand_pos_x = rand()%nx;
+        int rand_pos_y = rand()%ny;
+
+
+        bool placement_not_possible = false;
+
+
+        for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+            if ( test_dist( std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre) , *it ) ){
+                placement_not_possible = true;
+                break;
+            }
+        }
+
+
+        if (placement_not_possible == false){
+            list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre));
+        }
+    }
+
+    for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+        
+
+        bool test_dens_sapin = true;
+
+
+        // float rand_test = ((double) rand() / (RAND_MAX));
+        int rand_pos_x = (*it).first.first;
+        int rand_pos_y = (*it).first.second;
+
+        // if (rand_test <= dens_arbre.at(rand_pos_x,rand_pos_y)){
+        //     test_dens_sapin=true;
+        // }
+        // else{
+        //     continue;
+        // }
+
+        if (test_dens_sapin == true){
+            res.at(rand_pos_x, rand_pos_y) = 1;
+            res.at(rand_pos_x+2, rand_pos_y) = 1;
+            res.at(rand_pos_x-2, rand_pos_y) = 1;
+            res.at(rand_pos_x, rand_pos_y+2) = 1;
+            res.at(rand_pos_x, rand_pos_y-2) = 1;
+            res.at(rand_pos_x+1, rand_pos_y) = 1;
+            res.at(rand_pos_x-1, rand_pos_y) = 1;
+            res.at(rand_pos_x, rand_pos_y+1) = 1;
+            res.at(rand_pos_x, rand_pos_y-1) = 1;
+        }
+
+
+    }
+
+    return res;
+};
+
+
+
+
 SF2 HeighField::raw_distribution(Arbre& arbre) const{
 
     
@@ -1293,15 +1370,38 @@ SF2 HeighField::raw_distribution(Arbre& arbre) const{
 
     SF2 res = SF2(Grid2(Box2(a,b),nx,ny),0.0); //init 0
 
-    std::list<std::pair<int,int>>  list_arbre;
+    std::list< std::pair< std::pair<int,int> , int > >  list_arbre;
 
-    for (int k=0; k<10000; k++){
+    for (int k=0; k<100000; k++){
         int rand_pos_x = rand()%nx;
         int rand_pos_y = rand()%ny;
-        bool test_dens_sapin = false;
+
+
+        bool placement_not_possible = false;
+
+
+        for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+            if ( test_dist( std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre) , *it ) ){
+                placement_not_possible = true;
+                break;
+            }
+        }
+
+
+        if (placement_not_possible == false){
+            list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre));
+        }
+    }
+
+    for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+        
+
+        bool test_dens_sapin = true;
 
 
         float rand_test = ((double) rand() / (RAND_MAX));
+        int rand_pos_x = (*it).first.first;
+        int rand_pos_y = (*it).first.second;
 
         if (rand_test <= dens_arbre.at(rand_pos_x,rand_pos_y)){
             test_dens_sapin=true;
@@ -1310,18 +1410,7 @@ SF2 HeighField::raw_distribution(Arbre& arbre) const{
             continue;
         }
 
-        bool placement_not_possible = false;
-
-
-        for (std::list<std::pair<int,int>>::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
-            if (test_dist(std::pair<int,int>(rand_pos_x,rand_pos_y),*it,rayon_arbre)){
-                placement_not_possible = true;
-                break;
-            }
-        }
-
-
-        if ((placement_not_possible == false)&&(test_dens_sapin == true)){
+        if (test_dens_sapin == true){
             res.at(rand_pos_x, rand_pos_y) = 1;
             res.at(rand_pos_x+2, rand_pos_y) = 1;
             res.at(rand_pos_x-2, rand_pos_y) = 1;
@@ -1331,15 +1420,13 @@ SF2 HeighField::raw_distribution(Arbre& arbre) const{
             res.at(rand_pos_x-1, rand_pos_y) = 1;
             res.at(rand_pos_x, rand_pos_y+1) = 1;
             res.at(rand_pos_x, rand_pos_y-1) = 1;
-            list_arbre.push_back(std::pair<int,int>(rand_pos_x,rand_pos_y));
         }
-
 
 
     }
 
     return res;
-}
+};
 
 
 
@@ -1560,17 +1647,43 @@ void Compute_params( HeighField hf, QString s){
     // SF2 Power = hf.StreamPower();
     SF2 WET = hf.WetNessIndex();
 
+
+
     Sapin sapin = Sapin();
     Buisson buisson = Buisson();
+    Buisson buisson2 = Buisson();
+    Sapin sapin2 = Sapin();
+    Sapin sapin3 = Sapin();
+    Buisson buisson3 = Buisson();
+    Sapin sapin4 = Sapin();
+    Buisson buisson4 = Buisson();
+    Sapin sapin5 = Sapin();
+    Buisson buisson5 = Buisson();
+
+    std::cout<<"densdensdensdensdensdensdensdensdensdens"<<std::endl;
+
+
+
+    std::cout<<"distridistridistridistridistridistridistri"<<std::endl;
+
+
+    SF2 DISTRI_BUISSON = hf.raw_distribution(buisson2);
+    SF2 DISTRI_SAPIN = hf.raw_distribution(sapin2);
+    SF2 DOUBLE_DISTRI = hf.double_raw_distribution(sapin4,buisson4);
+
+    std::cout<<"sthrowsthrowsthrowsthrowsthrowsthrowsthrow"<<std::endl;
+
+    SF2 THROW_SAPIN = hf.raw_dart_throwing(sapin3);
+    SF2 THROW_BUISSON = hf.raw_dart_throwing(buisson3);
+
+
+    std::cout<<"endsthrowsthrowsthrowsthrowsthrowsthrowsthrow"<<std::endl;
 
     SF2 SAPIN = hf.densite_arbre(sapin);
+    //SF2 SAPIN_BUG = hf.densite_arbre(sapin5);
+    //SF2 BUISSON = hf.densite_arbre(buisson);
     SF2 BUISSON = hf.densite_arbre(buisson);
-    SF2 DISTRI_BUISSON = hf.raw_distribution(buisson);
-    SF2 DISTRI_SAPIN = hf.raw_distribution(sapin);
-    SF2 DOUBLE_DISTRI = hf.double_raw_distribution(sapin,buisson);
-
-
-
+    //SF2 BUISSON_BUG = hf.densite_arbre(buisson5);
     // QImage hauteur_phong = hf.Shade(hf);
     // QImage hauteur = hf.Export(hf);
     // QImage gradient = hf.Export(GRAD);
@@ -1583,10 +1696,13 @@ void Compute_params( HeighField hf, QString s){
     // QImage StreamPower = hf.Export(Power);
     QImage WetNessIndex = hf.Export(WET);
     QImage densite_sapin = hf.Export(SAPIN);
-
+    //QImage densite_sapin_bug = hf.Export(SAPIN_BUG);
+    QImage raw_throw_sapin = hf.Export(THROW_SAPIN);
     QImage sapin_raw_distribution = hf.Export(DISTRI_SAPIN);
+
     QImage densite_buisson = hf.Export(BUISSON);
-    
+    //QImage densite_buisson_bug = hf.Export(BUISSON_BUG);
+    QImage raw_throw_buisson = hf.Export(THROW_BUISSON);
     QImage buisson_raw_distribution = hf.Export(DISTRI_BUISSON);
     QImage double_raw_distribution = hf.Export(DOUBLE_DISTRI);
 
@@ -1613,7 +1729,12 @@ void Compute_params( HeighField hf, QString s){
     // StreamPower.save("Images/StreamPower"+s+".png");
     WetNessIndex.save("Images/WetNessIndex"+s+".png");
     densite_sapin.save("Images/densite_sapin"+s+".png");
+    //densite_sapin_bug.save("Images/densite_sapin_bug"+s+".png");
     densite_buisson.save("Images/densite_buisson"+s+".png");
+    //densite_buisson_bug.save("Images/densite_buisson_bug"+s+".png");
+
+    raw_throw_sapin.save("Images/throw_sapin"+s+".png");
+    raw_throw_buisson.save("Images/throw_buisson"+s+".png");
 
     sapin_raw_distribution.save("Images/sapin_raw_distribution"+s+".png");
     buisson_raw_distribution.save("Images/buisson_raw_distribution"+s+".png");
