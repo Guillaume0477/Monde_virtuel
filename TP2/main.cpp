@@ -1458,7 +1458,7 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
         int rand_pos_x = rand()%nx;
         int rand_pos_y = rand()%ny;
 
-        //float rand_test = ((double) rand() / (RAND_MAX)); //it fix memory issue !!??
+        float rand_test = ((double) rand() / (RAND_MAX)); //it fix memory issue !!??
 
         bool placement_not_possible = false;
 
@@ -1511,7 +1511,7 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
         int rand_pos_x = rand()%nx;
         int rand_pos_y = rand()%ny;
 
-        //float rand_test = ((double) rand() / (RAND_MAX)); //it fix memory issue !!??
+        float rand_test = ((double) rand() / (RAND_MAX)); //it fix memory issue !!??
 
         bool placement_not_possible = false;
 
