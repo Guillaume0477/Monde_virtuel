@@ -1249,20 +1249,20 @@ SF2 HeighField::densite_arbre(Arbre& arbre) const{
 
 
 
-bool test_dist(std::pair<int,int> couple1, std::pair<int,int> couple2, float rayon){
-    int diff_x = (couple1.first - couple2.first);
-    int diff_y = (couple1.second - couple2.second);
-    float dist = std::sqrt( diff_x*diff_x + diff_y*diff_y );
-    if (dist < 2*rayon){
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+// bool test_dist(std::pair<int,int> couple1, std::pair<int,int> couple2, float rayon){
+//     int diff_x = (couple1.first - couple2.first);
+//     int diff_y = (couple1.second - couple2.second);
+//     float dist = std::sqrt( diff_x*diff_x + diff_y*diff_y );
+//     if (dist < 2*rayon){
+//         return true;
+//     }
+//     else
+//     {
+//         return false;
+//     }
     
 
-}
+// }
 
 bool test_dist(std::pair< std::pair<int,int> , int> couple1, std::pair< std::pair<int,int> , int> couple2){
     int diff_x = (couple1.first.first - couple2.first.first);
@@ -1277,7 +1277,7 @@ bool test_dist(std::pair< std::pair<int,int> , int> couple1, std::pair< std::pai
     }
     
 
-}
+};
 
 
 
@@ -1429,7 +1429,6 @@ SF2 HeighField::raw_distribution(Arbre& arbre) const{
 };
 
 
-
 SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 
     
@@ -1458,16 +1457,8 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
     for (int k=0; k<100000; k++){
         int rand_pos_x = rand()%nx;
         int rand_pos_y = rand()%ny;
-        bool test_dens_arbre1 = false;
 
-        float rand_test = ((double) rand() / (RAND_MAX));
-
-        if (rand_test <= dens_arbre1.at(rand_pos_x,rand_pos_y)){
-            test_dens_arbre1=true;
-        }
-        else{
-            continue;
-        }
+        //float rand_test = ((double) rand() / (RAND_MAX)); //it fix memory issue !!??
 
         bool placement_not_possible = false;
 
@@ -1478,8 +1469,29 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
                 break;
             }
         }
+        if (placement_not_possible == false){
+            list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre1));
+        }
+    }
 
-        if ((placement_not_possible == false)&&(test_dens_arbre1 == true)){
+    for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+        
+        bool test_dens_arbre1 = false;
+
+        float rand_test = ((double) rand() / (RAND_MAX));
+        int rand_pos_x = (*it).first.first;
+        int rand_pos_y = (*it).first.second;
+
+
+        if (rand_test <= dens_arbre1.at(rand_pos_x,rand_pos_y)){
+            test_dens_arbre1=true;
+        }
+        else{
+            continue;
+        }
+
+
+        if (test_dens_arbre1 == true){
             res.at(rand_pos_x, rand_pos_y) = 1;
             res.at(rand_pos_x+2, rand_pos_y) = 1;
             res.at(rand_pos_x-2, rand_pos_y) = 1;
@@ -1489,24 +1501,17 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
             res.at(rand_pos_x-1, rand_pos_y) = 1;
             res.at(rand_pos_x, rand_pos_y+1) = 1;
             res.at(rand_pos_x, rand_pos_y-1) = 1;
-            list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre1));
         }
 
     }
 
-     for (int k=0; k<100000; k++){
+
+
+    for (int k=0; k<100000; k++){
         int rand_pos_x = rand()%nx;
         int rand_pos_y = rand()%ny;
-        bool test_dens_arbre2 = false;
 
-        float rand_test = ((double) rand() / (RAND_MAX));
-
-        if (rand_test <= dens_arbre1.at(rand_pos_x,rand_pos_y)){
-            test_dens_arbre2=true;
-        }
-        else{
-            continue;
-        }
+        //float rand_test = ((double) rand() / (RAND_MAX)); //it fix memory issue !!??
 
         bool placement_not_possible = false;
 
@@ -1517,8 +1522,27 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
                 break;
             }
         }
+        if (placement_not_possible == false){
+            list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre2));
+        }
+    }
 
-        if ((placement_not_possible == false)&&(test_dens_arbre2 == true)){
+    for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+        
+        bool test_dens_arbre2 = false;
+        int rand_pos_x = (*it).first.first;
+        int rand_pos_y = (*it).first.second;
+
+        float rand_test = ((double) rand() / (RAND_MAX));
+
+        if (rand_test <= dens_arbre1.at(rand_pos_x,rand_pos_y)){
+            test_dens_arbre2=true;
+        }
+        else{
+            continue;
+        }
+
+        if (test_dens_arbre2 == true){
             res.at(rand_pos_x, rand_pos_y) = 1;
             res.at(rand_pos_x+2, rand_pos_y+2) = 1;
             res.at(rand_pos_x-2, rand_pos_y-2) = 1;
@@ -1528,7 +1552,6 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
             res.at(rand_pos_x-1, rand_pos_y-1) = 1;
             res.at(rand_pos_x-1, rand_pos_y+1) = 1;
             res.at(rand_pos_x-1, rand_pos_y-1) = 1;
-            list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre2));
         }
 
     }
