@@ -539,14 +539,14 @@ SF2 HeighField::raw_dart_throwing(Arbre& arbre) const{
 
         if (test_dens_sapin == true){
             res.at(rand_pos_x, rand_pos_y) = 1;
-            res.at(rand_pos_x+2, rand_pos_y) = 1;
-            res.at(rand_pos_x-2, rand_pos_y) = 1;
-            res.at(rand_pos_x, rand_pos_y+2) = 1;
-            res.at(rand_pos_x, rand_pos_y-2) = 1;
-            res.at(rand_pos_x+1, rand_pos_y) = 1;
-            res.at(rand_pos_x-1, rand_pos_y) = 1;
-            res.at(rand_pos_x, rand_pos_y+1) = 1;
-            res.at(rand_pos_x, rand_pos_y-1) = 1;
+            // res.at(rand_pos_x+2, rand_pos_y) = 1;
+            // res.at(rand_pos_x-2, rand_pos_y) = 1;
+            // res.at(rand_pos_x, rand_pos_y+2) = 1;
+            // res.at(rand_pos_x, rand_pos_y-2) = 1;
+            // res.at(rand_pos_x+1, rand_pos_y) = 1;
+            // res.at(rand_pos_x-1, rand_pos_y) = 1;
+            // res.at(rand_pos_x, rand_pos_y+1) = 1;
+            // res.at(rand_pos_x, rand_pos_y-1) = 1;
         }
 
 
@@ -614,14 +614,14 @@ SF2 HeighField::raw_distribution(Arbre& arbre) const{
 
         if (test_dens_sapin == true){
             res.at(rand_pos_x, rand_pos_y) = 1;
-            res.at(rand_pos_x+2, rand_pos_y) = 1;
-            res.at(rand_pos_x-2, rand_pos_y) = 1;
-            res.at(rand_pos_x, rand_pos_y+2) = 1;
-            res.at(rand_pos_x, rand_pos_y-2) = 1;
-            res.at(rand_pos_x+1, rand_pos_y) = 1;
-            res.at(rand_pos_x-1, rand_pos_y) = 1;
-            res.at(rand_pos_x, rand_pos_y+1) = 1;
-            res.at(rand_pos_x, rand_pos_y-1) = 1;
+            // res.at(rand_pos_x+2, rand_pos_y) = 1;
+            // res.at(rand_pos_x-2, rand_pos_y) = 1;
+            // res.at(rand_pos_x, rand_pos_y+2) = 1;
+            // res.at(rand_pos_x, rand_pos_y-2) = 1;
+            // res.at(rand_pos_x+1, rand_pos_y) = 1;
+            // res.at(rand_pos_x-1, rand_pos_y) = 1;
+            // res.at(rand_pos_x, rand_pos_y+1) = 1;
+            // res.at(rand_pos_x, rand_pos_y-1) = 1;
         }
 
 
@@ -695,14 +695,14 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 
         if (test_dens_arbre1 == true){
             res.at(rand_pos_x, rand_pos_y) = 1;
-            res.at(rand_pos_x+2, rand_pos_y) = 1;
-            res.at(rand_pos_x-2, rand_pos_y) = 1;
-            res.at(rand_pos_x, rand_pos_y+2) = 1;
-            res.at(rand_pos_x, rand_pos_y-2) = 1;
-            res.at(rand_pos_x+1, rand_pos_y) = 1;
-            res.at(rand_pos_x-1, rand_pos_y) = 1;
-            res.at(rand_pos_x, rand_pos_y+1) = 1;
-            res.at(rand_pos_x, rand_pos_y-1) = 1;
+            // res.at(rand_pos_x+2, rand_pos_y) = 1;
+            // res.at(rand_pos_x-2, rand_pos_y) = 1;
+            // res.at(rand_pos_x, rand_pos_y+2) = 1;
+            // res.at(rand_pos_x, rand_pos_y-2) = 1;
+            // res.at(rand_pos_x+1, rand_pos_y) = 1;
+            // res.at(rand_pos_x-1, rand_pos_y) = 1;
+            // res.at(rand_pos_x, rand_pos_y+1) = 1;
+            // res.at(rand_pos_x, rand_pos_y-1) = 1;
         }
 
     }
@@ -745,15 +745,15 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
         }
 
         if (test_dens_arbre2 == true){
-            res.at(rand_pos_x, rand_pos_y) = 1;
-            res.at(rand_pos_x+2, rand_pos_y+2) = 1;
-            res.at(rand_pos_x-2, rand_pos_y-2) = 1;
-            res.at(rand_pos_x-2, rand_pos_y+2) = 1;
-            res.at(rand_pos_x+2, rand_pos_y-2) = 1;
-            res.at(rand_pos_x+1, rand_pos_y+1) = 1;
-            res.at(rand_pos_x-1, rand_pos_y-1) = 1;
-            res.at(rand_pos_x-1, rand_pos_y+1) = 1;
-            res.at(rand_pos_x-1, rand_pos_y-1) = 1;
+            res.at(rand_pos_x, rand_pos_y) = 0.5;
+            // res.at(rand_pos_x+2, rand_pos_y+2) = 1;
+            // res.at(rand_pos_x-2, rand_pos_y-2) = 1;
+            // res.at(rand_pos_x-2, rand_pos_y+2) = 1;
+            // res.at(rand_pos_x+2, rand_pos_y-2) = 1;
+            // res.at(rand_pos_x+1, rand_pos_y+1) = 1;
+            // res.at(rand_pos_x-1, rand_pos_y-1) = 1;
+            // res.at(rand_pos_x-1, rand_pos_y+1) = 1;
+            // res.at(rand_pos_x-1, rand_pos_y-1) = 1;
         }
 
     }
