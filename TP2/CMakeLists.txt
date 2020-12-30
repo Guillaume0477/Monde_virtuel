@@ -28,14 +28,25 @@ else()
 endif()
 
 file(
-GLOB_RECURSE
+GLOB
 source_files
-"main.cpp"
+"*.cpp"
 )
+
+file(
+GLOB
+header_files
+"*.hpp"
+)
+
+message("${source_files}")
+message("${header_files}")
+
 
 add_executable( 
   pgm
   ${source_files}
+  ${header_files}
 )
 
 target_link_libraries(pgm ${USED_GLEW_LIBRARY} ${OPENGL_LIBRARIES} Qt5::Widgets Qt5::OpenGL	)
