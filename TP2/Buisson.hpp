@@ -19,15 +19,15 @@ public:
         return rayon;
     }
     double humidity(double hum){
-        double value = fonction_one(0.0,0.1,hum);
+        double value = fonction_decroissante(0.0,0.2,hum);
         return (value);
     };
     double slope(double slo){
-        double value = fonction_one(0.0,0.3,slo);
+        double value = fonction_decroissante(0.0,0.3,slo);
         return (value);
     };
     double stream(double str){
-        double value = fonction_one(0.0,0.05,str);
+        double value = fonction_decroissante(0.0,0.01,str);
         return (value);
     };
 

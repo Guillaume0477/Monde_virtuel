@@ -1,21 +1,24 @@
 #include "utils.hpp"
 
 
-float fonction_one(float lim_inf, float lim_sup,float current_num){
+
+float fonction_croissante(float lim_inf, float lim_sup,float current_num, float start){
     if ((current_num > lim_inf) && (current_num < lim_sup)){
-        return current_num;
+        float pente = (1.0-start)/(lim_sup-lim_inf);
+        return current_num;//pente * current_num + (start - pente*lim_inf); // f affine croissante allant de [inf,sup] -> [start,1]
     }
     else {
         return 0;
     }
 }
 
-float fonction_zeros(float lim_inf, float lim_sup,float current_num){
+float fonction_decroissante(float lim_inf, float lim_sup,float current_num){
     if ((current_num > lim_inf) && (current_num < lim_sup)){
-        return current_num;
+
+        return 1.0 - current_num;
     }
     else {
-        return 1;
+        return 0;
     }
 }
 

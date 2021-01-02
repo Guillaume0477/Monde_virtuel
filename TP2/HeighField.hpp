@@ -82,10 +82,7 @@ public:
     SF2 StreamArea() const;
     SF2 StreamPower() const;
     SF2 WetNessIndex() const;
-    //SF2 densite_sapin(Arbre arbre) const;
-    SF2 densite_arbre(Arbre& arbre) const; //not working
-    SF2 densite_sapin() const;
-    SF2 densite_buisson() const;
+    SF2 densite_arbre(Arbre& arbre) const; 
     SF2 sapin_raw_distribution() const;
     SF2 raw_dart_throwing(Arbre& arbre) const;
     SF2 raw_distribution(Arbre& arbre) const;

@@ -469,7 +469,6 @@ SF2 HeighField::densite_arbre(Arbre& arbre) const{
     SF2 slope = SlopeMap();
     slope.Normalize();
     SF2 res = SF2(Grid2(Box2(a,b),nx,ny),1.0); //init 1
-    int rayon = arbre.get_rayon();
 
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < ny; ++j) {
