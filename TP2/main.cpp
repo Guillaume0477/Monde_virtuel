@@ -1729,7 +1729,7 @@ void Compute_params( HeighField hf, QString s){
     //QImage densite_buisson_bug = hf.Export(BUISSON_BUG);
     QImage raw_throw_buisson = hf.Export(THROW_BUISSON);
     QImage buisson_raw_distribution = hf.Export(DISTRI_BUISSON);
-    QImage double_raw_distribution = hf.Export(DOUBLE_DISTRI);
+    QImage double_raw_distribution = hf.ExportColored(DOUBLE_DISTRI,2);
 
 
 
@@ -1785,22 +1785,18 @@ int main (int argc, char *argv[]){
     //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
 
     QImage im;
-    im.load("heightmap3.jpeg");
+    im.load("heightmap3.png");
     //im.load("montagne.png");
 
-    HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(500,500)), im.width(), im.height());
+    HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(100,100)), im.width(), im.height());
     // SF2 pente = hf.SlopeMap();
     // pente.UpdateMinMax();
-
-    // hf.Smooth();
-    // // std::cout << pente.max() << ' ' << pente.min() << std::endl;
-    // LayeredField lf = LayeredField(hf, 0.1);
 
     // hf.Smooth();
     // std::cout << pente.max() << ' ' << pente.min() << std::endl;
     // LayeredField lf = LayeredField(hf, 0.1);
 
-    // lf.TermalErosion(100);
+    // lf.TermalErosion(10);
     
     // HeighField h = lf.toHeighField();
     // std::cout << h.max() << ' ' << h.min() << std::endl;
@@ -1824,9 +1820,9 @@ int main (int argc, char *argv[]){
     // acc.UpdateMinMax();
 
     QImage myIm = hf.Export(hf);
-    //QImage myImMap = h.Export(h);
+    // QImage myImMap = h.Export(h);
     myIm.save("pilou.png");
-    //myImMap.save("pilouTrue.png");
+    // myImMap.save("pilouTrue.png");
 
 
 

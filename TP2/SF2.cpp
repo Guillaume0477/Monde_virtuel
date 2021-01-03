@@ -211,3 +211,29 @@ QVector<ScalarPoint2> SF2::GetScalarPoints() const
     }
     return e;
 };
+
+void SF2::Dilate(int rayon){
+
+    std::vector<double> fieldMem;
+    fieldMem.resize(field.size());
+    int ray = sqrt(2)*rayon; 
+    for (int i = 0; i < nx ; i++){
+        for (int j = 0; j < ny ; j++){
+            if (at(i,j) != 0){
+                for (int k = 0; k < (ray*ray) ; k++){
+                    int a,b;
+
+                    a = i - rayon + floor(k/(ray));
+                    b = j - rayon + k%(ray);
+
+                    if ((a > 0) && (b > 0) && (a < nx) && (b < ny)){
+                        fieldMem[Index(a,b)] = at(i,j);
+                    }
+                }
+            }
+        }
+    }
+
+    field = fieldMem;
+
+}

@@ -73,6 +73,8 @@ public:
     void Normalize();
     void Clamp(float, float);
     QVector<ScalarPoint2> GetScalarPoints() const;
+
+    void Dilate(int);
 };
 
 #endif

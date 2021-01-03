@@ -1,12 +1,53 @@
 #include "HeighField.hpp"
 
 
+QImage HeighField::ExportColored(SF2 mapToExport, int nbColors, bool vis) const
+{
+    QImage image(nx,ny, QImage::Format_ARGB32);
+
+    const vec3 lightdir = vec3(2.0, 1.0, 4.0).Normalized();
+    mapToExport.Normalize();
+
+    for (int i=0; i <nx; i++)
+    {
+        for (int j=0; j <ny; j++)
+        {
+            float value = mapToExport.at(i,j);
+            int mapVal = (value*255);
+            if (vis){
+                vec3 n = Normal(i,j);
+                double d =n*lightdir;
+                d=(1.0+d)/2.0;
+                d *= d;
+                mapVal *= d;
+            }
+
+            if (nbColors == 1){
+                image.setPixel(i,j,qRgb(mapVal, 0.0, 0.0));
+            } else if (nbColors == 2){
+                if (mapVal > 2.0/(nbColors+1)){
+                    image.setPixel(i,j,qRgb(0.0, 100.0, 0.0));
+                } else if ((mapVal > 0)&&(mapVal<2.0/(1+nbColors))){
+                    image.setPixel(i,j,qRgb(124,252,0.0));
+                } else {
+                    image.setPixel(i,j,qRgb(0.0, 0.0, 0.0));
+                }
+            }
+
+        }
+    }
+
+    return image;
+
+}
+
 QImage HeighField::Export(SF2 mapToExport, bool vis) const
 {
     QImage image(nx,ny, QImage::Format_ARGB32);
 
     const vec3 lightdir = vec3(2.0, 1.0, 4.0).Normalized();
     mapToExport.Normalize();
+
     for (int i=0; i <nx; i++)
     {
         for (int j=0; j <ny; j++)
@@ -668,6 +709,7 @@ SF2 HeighField::raw_distribution(Arbre& arbre) const{
 
     }
 
+    res.Dilate(arbre.get_rayon());
     return res;
 };
 
@@ -778,7 +820,7 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 
         float rand_test = ((double) rand() / (RAND_MAX));
 
-        if (rand_test <= dens_arbre1.at(rand_pos_x,rand_pos_y)){
+        if (rand_test <= dens_arbre2.at(rand_pos_x,rand_pos_y)){
             test_dens_arbre2=true;
         }
         else{

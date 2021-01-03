@@ -19,6 +19,7 @@ public:
         rayon = r; 
     };
     virtual double get_rayon() const {
+        return rayon;
     }
     virtual double humidity(double hum){
         return hum;

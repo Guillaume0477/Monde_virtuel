@@ -91,6 +91,7 @@ public:
 
     //Exportation sous format d'image ! 
     QImage Export(SF2, bool = false) const;
+    QImage ExportColored(SF2, int, bool = false) const;
     QImage Shade(SF2 mapToExport) const {return Export(mapToExport, true);}
 
     void ExportOBJ(char*);
