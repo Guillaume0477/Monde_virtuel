@@ -482,20 +482,16 @@ SF2 HeighField::densite_arbre(Arbre& arbre) const{
     return res;
 }
 
-SF2 HeighField::raw_dart_throwing(Arbre& arbre) const{
 
-    
-    SF2 dens_arbre = densite_arbre(arbre);
-    dens_arbre.Normalize();
+
+std::list< std::pair< std::pair<int,int> , int > > HeighField::make_dart_throwing(Arbre& arbre) const{
+
 
     int rayon_arbre = arbre.get_rayon();
     std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
     std::cout<<rayon_arbre<<std::endl;
     std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
     
-
-    SF2 res = SF2(Grid2(Box2(a,b),nx,ny),0.0); //init 0
-
     std::list< std::pair< std::pair<int,int> , int > >  list_arbre;
 
     for (int k=0; k<100000; k++){
@@ -518,6 +514,50 @@ SF2 HeighField::raw_dart_throwing(Arbre& arbre) const{
             list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre));
         }
     }
+
+    return list_arbre;
+};
+
+
+
+SF2 HeighField::raw_dart_throwing(Arbre& arbre) const{
+
+    
+    SF2 dens_arbre = densite_arbre(arbre);
+    dens_arbre.Normalize();
+
+    // int rayon_arbre = arbre.get_rayon();
+    // std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
+    // std::cout<<rayon_arbre<<std::endl;
+    // std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
+    
+
+    SF2 res = SF2(Grid2(Box2(a,b),nx,ny),0.0); //init 0
+
+    std::list< std::pair< std::pair<int,int> , int > >  list_arbre;
+
+    // for (int k=0; k<100000; k++){
+    //     int rand_pos_x = rand()%nx;
+    //     int rand_pos_y = rand()%ny;
+
+
+    //     bool placement_not_possible = false;
+
+
+    //     for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+    //         if ( test_dist( std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre) , *it ) ){
+    //             placement_not_possible = true;
+    //             break;
+    //         }
+    //     }
+
+
+    //     if (placement_not_possible == false){
+    //         list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre));
+    //     }
+    // }
+
+    list_arbre = make_dart_throwing(arbre);
 
     for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
         
@@ -536,17 +576,17 @@ SF2 HeighField::raw_dart_throwing(Arbre& arbre) const{
         //     continue;
         // }
 
-        if (test_dens_sapin == true){
-            res.at(rand_pos_x, rand_pos_y) = 1;
-            // res.at(rand_pos_x+2, rand_pos_y) = 1;
-            // res.at(rand_pos_x-2, rand_pos_y) = 1;
-            // res.at(rand_pos_x, rand_pos_y+2) = 1;
-            // res.at(rand_pos_x, rand_pos_y-2) = 1;
-            // res.at(rand_pos_x+1, rand_pos_y) = 1;
-            // res.at(rand_pos_x-1, rand_pos_y) = 1;
-            // res.at(rand_pos_x, rand_pos_y+1) = 1;
-            // res.at(rand_pos_x, rand_pos_y-1) = 1;
-        }
+        //if (test_dens_sapin == true){
+        res.at(rand_pos_x, rand_pos_y) = 1;
+        // res.at(rand_pos_x+2, rand_pos_y) = 1;
+        // res.at(rand_pos_x-2, rand_pos_y) = 1;
+        // res.at(rand_pos_x, rand_pos_y+2) = 1;
+        // res.at(rand_pos_x, rand_pos_y-2) = 1;
+        // res.at(rand_pos_x+1, rand_pos_y) = 1;
+        // res.at(rand_pos_x-1, rand_pos_y) = 1;
+        // res.at(rand_pos_x, rand_pos_y+1) = 1;
+        // res.at(rand_pos_x, rand_pos_y-1) = 1;
+        //}
 
 
     }
@@ -563,36 +603,38 @@ SF2 HeighField::raw_distribution(Arbre& arbre) const{
     SF2 dens_arbre = densite_arbre(arbre);
     dens_arbre.Normalize();
 
-    int rayon_arbre = arbre.get_rayon();
-    std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
-    std::cout<<rayon_arbre<<std::endl;
-    std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
+    // int rayon_arbre = arbre.get_rayon();
+    // std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
+    // std::cout<<rayon_arbre<<std::endl;
+    // std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
     
 
     SF2 res = SF2(Grid2(Box2(a,b),nx,ny),0.0); //init 0
 
     std::list< std::pair< std::pair<int,int> , int > >  list_arbre;
 
-    for (int k=0; k<100000; k++){
-        int rand_pos_x = rand()%nx;
-        int rand_pos_y = rand()%ny;
+    list_arbre = make_dart_throwing(arbre);
+
+    // for (int k=0; k<100000; k++){
+    //     int rand_pos_x = rand()%nx;
+    //     int rand_pos_y = rand()%ny;
 
 
-        bool placement_not_possible = false;
+    //     bool placement_not_possible = false;
 
 
-        for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
-            if ( test_dist( std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre) , *it ) ){
-                placement_not_possible = true;
-                break;
-            }
-        }
+    //     for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
+    //         if ( test_dist( std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre) , *it ) ){
+    //             placement_not_possible = true;
+    //             break;
+    //         }
+    //     }
 
 
-        if (placement_not_possible == false){
-            list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre));
-        }
-    }
+    //     if (placement_not_possible == false){
+    //         list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre));
+    //     }
+    // }
 
     for (std::list< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
         

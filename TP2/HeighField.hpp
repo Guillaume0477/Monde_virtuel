@@ -83,7 +83,7 @@ public:
     SF2 StreamPower() const;
     SF2 WetNessIndex() const;
     SF2 densite_arbre(Arbre& arbre) const; 
-    SF2 sapin_raw_distribution() const;
+    std::list< std::pair< std::pair<int,int> , int > > make_dart_throwing(Arbre& arbre) const;
     SF2 raw_dart_throwing(Arbre& arbre) const;
     SF2 raw_distribution(Arbre& arbre) const;
     SF2 double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const;
