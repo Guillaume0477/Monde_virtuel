@@ -212,14 +212,14 @@ QVector<ScalarPoint2> SF2::GetScalarPoints() const
     return e;
 };
 
-void SF2::Dilate(int rayon){
+void SF2::Dilate(int rayon, double value){
 
     std::vector<double> fieldMem;
     fieldMem.resize(field.size());
     int ray = sqrt(2)*rayon; 
     for (int i = 0; i < nx ; i++){
         for (int j = 0; j < ny ; j++){
-            if (at(i,j) != 0){
+            if (at(i,j) == value){
                 for (int k = 0; k < (ray*ray) ; k++){
                     int a,b;
 
@@ -230,6 +230,8 @@ void SF2::Dilate(int rayon){
                         fieldMem[Index(a,b)] = at(i,j);
                     }
                 }
+            } else {
+                fieldMem[Index(i,j)] = at(i,j);
             }
         }
     }

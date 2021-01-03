@@ -25,12 +25,12 @@ QImage HeighField::ExportColored(SF2 mapToExport, int nbColors, bool vis) const
             if (nbColors == 1){
                 image.setPixel(i,j,qRgb(mapVal, 0.0, 0.0));
             } else if (nbColors == 2){
-                if (mapVal > 2.0/(nbColors+1)){
-                    image.setPixel(i,j,qRgb(0.0, 100.0, 0.0));
-                } else if ((mapVal > 0)&&(mapVal<2.0/(1+nbColors))){
-                    image.setPixel(i,j,qRgb(124,252,0.0));
+                if (value > 2.0/(nbColors+1)){
+                    image.setPixel(i,j,qRgb(0, 50, 0));
+                } else if ((value > 0.0)&&(value<2.0/(1.0+float(nbColors)))){
+                    image.setPixel(i,j,qRgb(124,252,0));
                 } else {
-                    image.setPixel(i,j,qRgb(0.0, 0.0, 0.0));
+                    image.setPixel(i,j,qRgb(0, 0, 0));
                 }
             }
 
@@ -709,7 +709,8 @@ SF2 HeighField::raw_distribution(Arbre& arbre) const{
 
     }
 
-    res.Dilate(arbre.get_rayon());
+    res.UpdateMinMax();
+    res.Dilate(arbre.get_rayon(), res.max());
     return res;
 };
 
@@ -841,6 +842,8 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 
     }
     
+    res.Dilate(arbre1.get_rayon(), 1.0);
+    res.Dilate(arbre2.get_rayon(), 0.5);
 
     return res;
 }

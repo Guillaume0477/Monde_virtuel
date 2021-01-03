@@ -74,7 +74,7 @@ public:
     void Clamp(float, float);
     QVector<ScalarPoint2> GetScalarPoints() const;
 
-    void Dilate(int);
+    void Dilate(int, double);
 };
 
 #endif
