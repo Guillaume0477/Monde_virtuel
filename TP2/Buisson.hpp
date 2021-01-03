@@ -12,7 +12,7 @@ protected:
 
 public:
     Buisson(){
-        rayon = 1;
+        rayon = 2;
         nombre_attrib = 3;
     };
     double get_rayon() const {
@@ -28,6 +28,10 @@ public:
     };
     double stream(double str){
         double value = fonction_decroissante(0.0,0.01,str);
+        return (value);
+    };
+    double acces(double acc){
+        double value = fonction_croissante(0.60,1.0,acc);
         return (value);
     };
 

@@ -11,7 +11,7 @@ protected:
     int rayon;
 public:
     Arbre(){
-        rayon = 3; 
+        rayon = 1; 
         nombre_attrib = 3;
     };
     Arbre(const int nb, const int r){
@@ -29,6 +29,9 @@ public:
     };
     virtual double stream(double str){
         return str;
+    };
+    virtual double acces(double acc){
+        return acc;
     };
 
 };

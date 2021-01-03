@@ -1666,9 +1666,9 @@ void Compute_params( HeighField hf, QString s){
 
     // SF2 GRAD = hf.GradientNorm();
     // SF2 LAP = hf.LaplacianMap();
-    // SF2 SLOPE = hf.SlopeMap();
+    SF2 SLOPE = hf.SlopeMap();
     // SF2 AVSLOPE = hf.AVGSlopeMap();
-    // SF2 ACCESS = hf.accessMap();
+    SF2 ACCESS = hf.accessMap();
     // SF2 AreaStreepest = hf.StreamAreaStreepest();
     // SF2 Area = hf.StreamArea();
     // SF2 Power = hf.StreamPower();
@@ -1713,9 +1713,9 @@ void Compute_params( HeighField hf, QString s){
     // QImage hauteur = hf.Export(hf);
     // QImage gradient = hf.Export(GRAD);
     // QImage laplacian = hf.Export(LAP);
-    // QImage slope = hf.Export(SLOPE);
+    QImage slope = hf.Export(SLOPE);
     // QImage avslope = hf.Export(AVSLOPE);
-    // QImage acc = hf.Export(ACCESS);
+    QImage acc = hf.Export(ACCESS);
     // QImage StreamAreaStreepest = hf.Export(AreaStreepest);
     // QImage StreamArea = hf.Export(Area);
     // QImage StreamPower = hf.Export(Power);
@@ -1743,11 +1743,11 @@ void Compute_params( HeighField hf, QString s){
     // //std::cout <<" laplacian "<<s<< std::endl;
     // laplacian.save("Images/lapla"+s+".png");
     // //std::cout <<" slope "<<s<< std::endl;
-    // slope.save("Images/slope"+s+".png");
+    slope.save("Images/slope"+s+".png");
     // //std::cout <<" avslope "<<s<< std::endl;
     // avslope.save("Images/avslope"+s+".png");
 
-    // acc.save("Images/access" + s + ".png");
+    acc.save("Images/access" + s + ".png");
 
     // StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
     // StreamArea.save("Images/StreamArea"+s+".png");
@@ -1785,8 +1785,9 @@ int main (int argc, char *argv[]){
     //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
 
     QImage im;
-    im.load("heightmap3.png");
-    //im.load("montagne.png");
+    im.load("heightmap3.jpeg");
+    //im.load("heightmap3.png");
+    //im.load("best.png");
 
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(100,100)), im.width(), im.height(), 100.0);
     // SF2 pente = hf.SlopeMap();
