@@ -26,9 +26,9 @@ QImage HeighField::ExportColored(SF2 mapToExport, int nbColors, bool vis) const
                 image.setPixel(i,j,qRgb(mapVal, 0.0, 0.0));
             } else if (nbColors == 2){
                 if (value > 2.0/(nbColors+1)){
-                    image.setPixel(i,j,qRgb(0, 50, 0));
-                } else if ((value > 0.0)&&(value<2.0/(1.0+float(nbColors)))){
                     image.setPixel(i,j,qRgb(124,252,0));
+                } else if ((value > 0.0)&&(value<2.0/(1.0+float(nbColors)))){
+                    image.setPixel(i,j,qRgb(218,242,0));
                 } else {
                     image.setPixel(i,j,qRgb(0, 0, 0));
                 }
@@ -70,7 +70,7 @@ QImage HeighField::Export(SF2 mapToExport, bool vis) const
 
 }
 
-bool HeighField::intersectRay(vec3 rayDir, double& t, vec3 origin){
+bool HeighField::intersectRay(vec3 rayDir, double& t, vec3 origin) const{
 
     double epsilon = 1.0;
     vec3 ray = origin + t*rayDir;
@@ -96,7 +96,7 @@ bool HeighField::intersectRay(vec3 rayDir, double& t, vec3 origin){
     return false;
 }
 
-double HeighField::access(int i, int j, int Nray){
+double HeighField::access(int i, int j, int Nray) const {
     double accessVal = 0.0;
 
     vec3 origin = vec3(i,j,at(i,j));
@@ -509,6 +509,8 @@ SF2 HeighField::densite_arbre(Arbre& arbre) const{
     humidity.Normalize();
     SF2 slope = SlopeMap();
     slope.Normalize();
+    SF2 access = accessMap();
+    access.Normalize();
     SF2 res = SF2(Grid2(Box2(a,b),nx,ny),1.0); //init 1
 
     for (int i = 0; i < nx; ++i) {
@@ -517,6 +519,7 @@ SF2 HeighField::densite_arbre(Arbre& arbre) const{
             res.at(i, j) = std::min( arbre.humidity(humidity.at(i,j)) , res.at(i, j) );
             res.at(i, j) = std::min( arbre.slope(slope.at(i,j)) , res.at(i, j) );
             res.at(i, j) = std::min( arbre.stream(stream.at(i,j)) , res.at(i, j) );
+            res.at(i, j) = std::min( arbre.acces(access.at(i,j)) , res.at(i, j) );
             }
         }
     }

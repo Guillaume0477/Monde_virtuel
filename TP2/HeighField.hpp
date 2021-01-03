@@ -44,19 +44,17 @@ public:
         return sqrt(g * g);
     }
 
-    bool intersectRay(vec3, double&, vec3);
-    double access(int,int, int N = 20);
-    SF2 accessMap(){    
+    bool intersectRay(vec3, double&, vec3) const;
+    double access(int,int, int N = 20) const;
+    SF2 accessMap() const {    
         SF2 accMap = SF2(Grid2(*this));
-
         for (int i = 0; i < nx; i++){
             for (int j = 0; j < ny; j++){
                 accMap.at(i,j) = access(i,j);
             }
         }
-
         return accMap;
-    }
+    };
 
 
     double AverageSlope(int, int) const; 
