@@ -226,7 +226,7 @@ void SF2::Dilate(int rayon, double value){
                     a = i - rayon + floor(k/(ray));
                     b = j - rayon + k%(ray);
 
-                    if ((a > 0) && (b > 0) && (a < nx) && (b < ny)){
+                    if ((a >= 0) && (b >= 0) && (a < nx) && (b < ny)){
                         fieldMem[Index(a,b)] = at(i,j);
                     }
                 }
