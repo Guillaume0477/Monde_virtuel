@@ -17,15 +17,13 @@ class HeighField : public SF2
 protected:
 public:
     HeighField(const SF2 &s) : SF2(s) {}
-    HeighField(const QImage &image, const Box2 &box, double nx, double ny) /*:Grid2(box, image.width(),image.height()){*/
+    HeighField(const QImage &image, const Box2 &box, double nx, double ny, double normFact) /*:Grid2(box, image.width(),image.height()){*/
     {
         //et interpoler entre les deux z
         
         //Initialisation
         Grid2 grid = Grid2(box, nx, ny);
         *this = SF2(grid);
-
-        float normFact = 500.0;
 
         //Remplissage des hauteurs
         for (int x = 0; x < nx; x ++){

@@ -1788,7 +1788,7 @@ int main (int argc, char *argv[]){
     im.load("heightmap3.png");
     //im.load("montagne.png");
 
-    HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(100,100)), im.width(), im.height());
+    HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(100,100)), im.width(), im.height(), 100.0);
     // SF2 pente = hf.SlopeMap();
     // pente.UpdateMinMax();
 
