@@ -582,7 +582,6 @@ std::vector< std::pair< std::pair<int,int> , int > > HeighField::make_dart_throw
             int x, y;
             while (done == false){
                 done = true;
-
                 x = int(float(rand())/RAND_MAX*val) + val*i;
                 y = int(float(rand())/RAND_MAX * val) + val * j;
 
@@ -930,13 +929,26 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 }
 
 
-// SF2 HeighField::double_raw_distribution_quicker(Arbre& arbre1, Arbre& arbre2) const{
+SF2 HeighField::double_raw_distribution_quicker(Arbre& arbre1, Arbre& arbre2) const{
 
-//     SF2 res;
-//     SF2 sapinDist = HeighField::raw_distribution(arbre1, false);
-//     SF2 buissonDist = HeighField::raw_distribution(arbre2, false);
+    SF2 sapinDist = raw_distribution(arbre1, false);
+    SF2 buissonDist = raw_distribution(arbre2, false);
 
-//     SF2 avoidArea = sapinDist;
-//     avoidArea.Dilate(arbre1.get_rayon()+arbre2.get_rayon(), 1.0);
+    SF2 avoidArea = sapinDist;
+    avoidArea.Dilate(arbre1.get_rayon()+arbre2.get_rayon(), 1.0);
+    QImage test = Export(avoidArea);
+    test.save("Images/test.png");
+    for (int i = 0; i < nx; i++){
+        for (int j = 0; j < ny ; j++){
+            if ((buissonDist.at(i,j) == 1) && (avoidArea.at(i,j) == 0)){
+                sapinDist.at(i,j) = 0.5;
+            }
+        }
+    }
 
-// }
+    sapinDist.Dilate(arbre1.get_rayon(), 1.0);
+    sapinDist.Dilate(arbre2.get_rayon(), 0.5);
+
+
+    return sapinDist;
+}

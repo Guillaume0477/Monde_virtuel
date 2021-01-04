@@ -12,7 +12,7 @@ protected:
 
 public:
     Buisson(){
-        rayon = 2;
+        rayon = 1;
         nombre_attrib = 3;
     };
     double get_rayon() const {

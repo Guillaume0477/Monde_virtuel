@@ -1694,7 +1694,7 @@ void Compute_params( HeighField hf, QString s){
 
     SF2 DISTRI_BUISSON = hf.raw_distribution(buisson2);
     SF2 DISTRI_SAPIN = hf.raw_distribution(sapin2);
-    SF2 DOUBLE_DISTRI = hf.double_raw_distribution(sapin4,buisson4);
+    SF2 DOUBLE_DISTRI = hf.double_raw_distribution_quicker(sapin4,buisson4);
 
     std::cout<<"sthrowsthrowsthrowsthrowsthrowsthrowsthrow"<<std::endl;
 
@@ -1785,7 +1785,7 @@ int main (int argc, char *argv[]){
     //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
 
     QImage im;
-    im.load("heightmap3.jpeg");
+    im.load("heightmap3.png");
     //im.load("heightmap3.png");
     //im.load("best.png");
 
