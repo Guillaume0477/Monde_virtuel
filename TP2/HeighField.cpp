@@ -936,8 +936,7 @@ SF2 HeighField::double_raw_distribution_quicker(Arbre& arbre1, Arbre& arbre2) co
 
     SF2 avoidArea = sapinDist;
     avoidArea.Dilate(arbre1.get_rayon()+arbre2.get_rayon(), 1.0);
-    QImage test = Export(avoidArea);
-    test.save("Images/test.png");
+    
     for (int i = 0; i < nx; i++){
         for (int j = 0; j < ny ; j++){
             if ((buissonDist.at(i,j) == 1) && (avoidArea.at(i,j) == 0)){
