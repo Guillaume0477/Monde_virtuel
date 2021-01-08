@@ -572,7 +572,7 @@ std::vector< std::pair< std::pair<int,int> , int > > HeighField::make_dart_throw
     
     std::vector< std::pair< std::pair<int,int> , int > >  list_arbre;
 
-    int val = int(3*arbre.get_rayon());
+    int val = int(2.1*arbre.get_rayon());
     int nbx = int(nx/val);
 
     int nby = int(ny/val);
@@ -731,7 +731,18 @@ SF2 HeighField::raw_distribution(Arbre& arbre, bool dil) const{
 
     std::vector< std::pair< std::pair<int,int> , int > >  list_arbre;
 
+
+    std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_clock::now();
+    
     list_arbre = make_dart_throwing_quicker(arbre);
+
+ 
+    std::chrono::high_resolution_clock::time_point b= std::chrono::high_resolution_clock::now();
+    
+    // mesurer la difference, et l'exprimer en microsecondes 
+    unsigned int time= std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
+
+    std::cout<<"Temps Dart Throwing : "<<time<<" ms"<<std::endl;
     
     // for (int k=0; k<100000; k++){
     //     int rand_pos_x = rand()%nx;
