@@ -1678,11 +1678,11 @@ void Compute_params( HeighField hf, QString s){
 
 
 
-    // std::cout << "Enregistrement du terrain" << std::endl;
+    // // std::cout << "Enregistrement du terrain" << std::endl;
     
-    // std::cout << "Hauteurs" << std::endl;
-    // QImage hauteur = hf.Export(hf);
-    // hauteur.save("Images/hauteur"+s+".png");
+    // // std::cout << "Hauteurs" << std::endl;
+    // // QImage hauteur = hf.Export(hf);
+    // // hauteur.save("Images/hauteur"+s+".png");
 
     // std::cout << "Hauteurs Phong" << std::endl;
     // QImage hauteur_phong = hf.Shade(hf);
@@ -1690,52 +1690,52 @@ void Compute_params( HeighField hf, QString s){
 
 
 
-    std::cout<<"Calculs pour affichage des propriétés de terrain"<<std::endl;
+    // std::cout<<"Calculs pour affichage des propriétés de terrain"<<std::endl;
     
-    // std::cout<<"Gradient"<<std::endl;
-    // SF2 GRAD = hf.GradientNorm();
-    // QImage gradient = hf.Export(GRAD);
-    // gradient.save("Images/gradient"+s+".png");
+    // // std::cout<<"Gradient"<<std::endl;
+    // // SF2 GRAD = hf.GradientNorm();
+    // // QImage gradient = hf.Export(GRAD);
+    // // gradient.save("Images/gradient"+s+".png");
 
-    // std::cout << "Laplacien" << std::endl;
-    // SF2 LAP = hf.LaplacianMap();
-    // QImage laplacian = hf.Export(LAP);
-    // laplacian.save("Images/lapla"+s+".png");
+    // // std::cout << "Laplacien" << std::endl;
+    // // SF2 LAP = hf.LaplacianMap();
+    // // QImage laplacian = hf.Export(LAP);
+    // // laplacian.save("Images/lapla"+s+".png");
 
-    std::cout << "Pente" << std::endl;
-    SF2 SLOPE = hf.SlopeMap();
-    QImage slope = hf.Export(SLOPE);
-    slope.save("Images/slope"+s+".png");
+    // std::cout << "Pente" << std::endl;
+    // SF2 SLOPE = hf.SlopeMap();
+    // QImage slope = hf.Export(SLOPE);
+    // slope.save("Images/slope"+s+".png");
 
-    // std::cout << "Pente Moyenne" << std::endl;
-    // SF2 AVSLOPE = hf.AVGSlopeMap();
-    // QImage avslope = hf.Export(AVSLOPE);
-    // avslope.save("Images/avslope"+s+".png");
+    // // std::cout << "Pente Moyenne" << std::endl;
+    // // SF2 AVSLOPE = hf.AVGSlopeMap();
+    // // QImage avslope = hf.Export(AVSLOPE);
+    // // avslope.save("Images/avslope"+s+".png");
 
-    std::cout << "Accessibilite" << std::endl;
-    SF2 ACCESS = hf.accessMap();
-    QImage acc = hf.Export(ACCESS);
-    acc.save("Images/access" + s + ".png");
+    // std::cout << "Accessibilite" << std::endl;
+    // SF2 ACCESS = hf.accessMap();
+    // QImage acc = hf.Export(ACCESS);
+    // acc.save("Images/access" + s + ".png");
 
-    // std::cout << "Stream Area Streepest" << std::endl;
-    // SF2 AreaStreepest = hf.StreamAreaStreepest();
-    // QImage StreamAreaStreepest = hf.Export(AreaStreepest);
-    // StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
+    // // std::cout << "Stream Area Streepest" << std::endl;
+    // // SF2 AreaStreepest = hf.StreamAreaStreepest();
+    // // QImage StreamAreaStreepest = hf.Export(AreaStreepest);
+    // // StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
 
-    // std::cout << "Stream Area" << std::endl;
-    // SF2 Area = hf.StreamArea();
-    // QImage StreamArea = hf.Export(Area);
-    // StreamArea.save("Images/StreamArea"+s+".png");
+    // // std::cout << "Stream Area" << std::endl;
+    // // SF2 Area = hf.StreamArea();
+    // // QImage StreamArea = hf.Export(Area);
+    // // StreamArea.save("Images/StreamArea"+s+".png");
 
-    // std::cout << "Stream Power" << std::endl;
-    // SF2 Power = hf.StreamPower();
-    // QImage StreamPower = hf.Export(Power);
-    // StreamPower.save("Images/StreamPower"+s+".png");
+    // // std::cout << "Stream Power" << std::endl;
+    // // SF2 Power = hf.StreamPower();
+    // // QImage StreamPower = hf.Export(Power);
+    // // StreamPower.save("Images/StreamPower"+s+".png");
 
-    std::cout << "Wetness Index" << std::endl;
-    SF2 WET = hf.WetNessIndex();
-    QImage WetNessIndex = hf.Export(WET);
-    WetNessIndex.save("Images/WetNessIndex"+s+".png");
+    // std::cout << "Wetness Index" << std::endl;
+    // SF2 WET = hf.WetNessIndex();
+    // QImage WetNessIndex = hf.Export(WET);
+    // WetNessIndex.save("Images/WetNessIndex"+s+".png");
 
 
     std::cout<<"Calculs pour affichage des distributions"<<std::endl;
@@ -1752,7 +1752,8 @@ void Compute_params( HeighField hf, QString s){
 
     std::cout << "Combinaison sapins et buissons" << std::endl;
     SF2 DOUBLE_DISTRI = hf.double_raw_distribution_quicker(sapin4,buisson4, quicker);
-    QImage double_raw_distribution = hf.ExportColored(DOUBLE_DISTRI,2);
+    hf.Normalize();
+    QImage double_raw_distribution = hf.ExportColored(DOUBLE_DISTRI,2,true);
     double_raw_distribution.save("Images/double_raw_distribution"+s+".png");
 
     // Ancienne version de la double distribution
@@ -1817,7 +1818,7 @@ int main (int argc, char *argv[]){
 
     QImage im;
     //im.load("heightmap3.png");
-    im.load("../ImagesToTest/im500x500.jpeg");
+    im.load("ImagesToTest/im500x500.jpeg");
     //im.load("montagne.png");
     //im.load("best.png");
 

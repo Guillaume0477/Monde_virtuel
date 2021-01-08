@@ -3,6 +3,7 @@
 
 QImage HeighField::ExportColored(SF2 mapToExport, int nbColors, bool vis) const
 {
+
     QImage image(nx,ny, QImage::Format_ARGB32);
 
     const vec3 lightdir = vec3(2.0, 1.0, 4.0).Normalized();
@@ -13,7 +14,7 @@ QImage HeighField::ExportColored(SF2 mapToExport, int nbColors, bool vis) const
         for (int j=0; j <ny; j++)
         {
             float value = mapToExport.at(i,j);
-            int mapVal = (value*255);
+            int mapVal = (at(i,j)*255);
             if (vis){
                 vec3 n = Normal(i,j);
                 double d =n*lightdir;
@@ -30,7 +31,7 @@ QImage HeighField::ExportColored(SF2 mapToExport, int nbColors, bool vis) const
                 } else if ((value > 0.0)&&(value<2.0/(1.0+float(nbColors)))){
                     image.setPixel(i,j,qRgb(218,242,0));
                 } else {
-                    image.setPixel(i,j,qRgb(0, 0, 0));
+                    image.setPixel(i,j,qRgb(mapVal, mapVal, mapVal));
                 }
             }
 
@@ -40,6 +41,47 @@ QImage HeighField::ExportColored(SF2 mapToExport, int nbColors, bool vis) const
     return image;
 
 }
+
+// QImage HeighField::ExportColored(SF2 mapToExport, int nbColors, bool vis) const
+// {
+//     QImage image(nx,ny, QImage::Format_ARGB32);
+
+//     const vec3 lightdir = vec3(2.0, 1.0, 4.0).Normalized();
+//     mapToExport.Normalize();
+
+//     for (int i=0; i <nx; i++)
+//     {
+//         for (int j=0; j <ny; j++)
+//         {
+//             float value = mapToExport.at(i,j);
+//             int mapVal = (value*255);
+//             if (vis){
+//                 vec3 n = Normal(i,j);
+//                 double d =n*lightdir;
+//                 d=(1.0+d)/2.0;
+//                 d *= d;
+//                 mapVal *= d;
+//             }
+
+//             if (nbColors == 1){
+//                 image.setPixel(i,j,qRgb(mapVal, 0.0, 0.0));
+//             } else if (nbColors == 2){
+//                 if (value > 2.0/(nbColors+1)){
+//                     image.setPixel(i,j,qRgb(124,252,0));
+//                 } else if ((value > 0.0)&&(value<2.0/(1.0+float(nbColors)))){
+//                     image.setPixel(i,j,qRgb(218,242,0));
+//                 } else {
+//                     image.setPixel(i,j,qRgb(0, 0, 0));
+//                 }
+//             }
+
+//         }
+//     }
+
+//     return image;
+
+// }
+
 
 QImage HeighField::Export(SF2 mapToExport, bool vis) const
 {
@@ -820,7 +862,7 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 
     std::vector< std::pair< std::pair<int,int> , int > >  list_arbre;
 
-    for (int k=0; k<100000; k++){
+    for (int k=0; k<nx*ny; k++){
         int rand_pos_x = rand()%nx;
         int rand_pos_y = rand()%ny;
 
@@ -873,7 +915,7 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 
 
 
-    for (int k=0; k<100000; k++){
+    for (int k=0; k<nx*ny; k++){
         int rand_pos_x = rand()%nx;
         int rand_pos_y = rand()%ny;
 
@@ -953,3 +995,4 @@ SF2 HeighField::double_raw_distribution_quicker(Arbre& arbre1, Arbre& arbre2, bo
 
     return sapinDist;
 }
+
