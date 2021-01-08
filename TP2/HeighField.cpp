@@ -572,7 +572,7 @@ std::vector< std::pair< std::pair<int,int> , int > > HeighField::make_dart_throw
     
     std::vector< std::pair< std::pair<int,int> , int > >  list_arbre;
 
-    int val = int(3*arbre.get_rayon());
+    int val = arbre.get_rayon()*2.5;
     int nbx = int(nx/val);
 
     int nby = int(ny/val);
@@ -593,7 +593,7 @@ std::vector< std::pair< std::pair<int,int> , int > > HeighField::make_dart_throw
                     if ((a<0) || (b < 0) || (a >= nbx) || (b>=nby)){
                         continue;
                     }
-                    std::pair<std::pair<int,int>,int> neighbour = list_arbre[a*nbx+b];
+                    std::pair<std::pair<int,int>,int> neighbour = list_arbre[a*nby+b];
 
                     float dist = sqrt((neighbour.first.first - x)*(neighbour.first.first - x) + (neighbour.first.second - y)*(neighbour.first.second - y));
 
