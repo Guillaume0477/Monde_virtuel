@@ -206,7 +206,6 @@ QVector<ScalarPoint2> SF2::GetScalarPoints() const
     for (int i=0; i < nx ; i++){
         for (int j=0; j < ny ; j++){
             e[k++] = ScalarPoint2(QPoint(i,j), at(i,j));
-            //std::cout<<"atttt"<<e.at(i+nx*j).Scalar()<<std::endl;
         }
     }
     return e;

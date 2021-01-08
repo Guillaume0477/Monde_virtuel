@@ -312,31 +312,19 @@ int HeighField::CheckFlowSlope( const QPoint& p, QPoint* point, double* height, 
     const QPoint next[8] = { QPoint (1,0) ,QPoint (1,1) ,QPoint (0,1) ,QPoint (-1,1) ,QPoint (0,-1) ,QPoint (-1,-1) ,QPoint (-1,0), QPoint (1,-1) };
     const double length[8] = {1.0 , sqrt(2.0),1.0 , sqrt(2.0),1.0 , sqrt(2.0),1.0 , sqrt(2.0)};
 
-    //std::cout<<"zp "<<zp<<std::endl;
-
     mask = 0;
     for (int i=0; i<8; i++){
         QPoint b = p + next[i];
-        // std::cout<<"next"<<next[i].x()<<" "<<next[i].y() <<std::endl;
-        //std::cout<<"b "<<b.x()<<" "<<b.y() <<std::endl;
 
         double step = at(b.x(), b.y()) - zp;
         
         if (b.x()>=nx || b.y()>=ny || b.x()<=0.0 || b.y()<=0.0){
             continue;
         }
-        
-        //if(!Box2::Inside(vec2(b.x(),b.y()))){continue;};
-
-
-        
-        // std::cout<<"at_b "<<at(b.x(), b.y())<<std::endl;
-        // std::cout<<"step "<<step<<std::endl;
 
         if (step <0.0)
         {
             point[n] = b;
-            //std::cout<<"point "<<point[n].x()<<" "<<point[n].y() <<std::endl;
             height[n] = -step;
             slope[n] = - step/ length[i];
             slopesum += slope[n];
@@ -357,45 +345,13 @@ SF2 HeighField::StreamAreaStreepest() const{
 
     SF2 stream = SF2(Grid2(Box2(a,b),nx,ny),1.0);
 
-    // SF2 stream = SF2(Grid2(*this));
-
-    // for (int i = 0; i < nx; i++){
-    //     for (int j = 0; j < ny; j++){
-    //         stream.at(i,j) = 1.0;
-    //     }
-    // }
-    // stream.at(2,2) = 0.01;
-
     QVector<ScalarPoint2> QEE = GetScalarPoints();
 
-    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
-    // for (int i = QEE.size() -1; i>=0; i--){
-    //     std::cout<<QEE.at(i).Scalar()<<std::endl;
-    //     //stream.at(q[k].x(), q[k].y()) += sp;
-    // }
-    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
-    
-    // QVector<ScalarPoint2> QEE = QVector(ScalarPoint2(next,length))
     std::sort(QEE.begin(), QEE.end());
-
-    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
-    // for (int i = QEE.size() -1; i>=0; i--){
-    //     std::cout<<QEE.at(i).Scalar()<<std::endl;
-    //     //stream.at(q[k].x(), q[k].y()) += sp;
-    // }
-    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
 
     for (int i = QEE.size() -1; i>=0; i--){
         
-        // QPoint q = QPoint(2,2);
-        // double z = 5;
-        // ScalarPoint2 p = ScalarPoint2(q,z);
-        // p.Point(); 
-        //QEE.at(i).Point();
         QPoint p = QEE.at(i).Point();
-
-
-        
 
         QPoint q[8];
         double h[8];
@@ -404,14 +360,6 @@ SF2 HeighField::StreamAreaStreepest() const{
         int m;
 
         int n = CheckFlowSlope(p,q,h,s,sn,m);
-
-        // std::cout<<"p "<<p.x()<<" , "<<p.y()<<std::endl;
-        // for (int j=0; j<8; j++){
-        //     std::cout<<"q "<<j<<q[j].x()<<" "<<q[j].y()<<std::endl;
-        //     std::cout<<"h "<<j<<h[j]<<std::endl;
-        //     std::cout<<"s "<<j<<s[j]<<std::endl;
-        //     std::cout<<"sn "<<j<<sn[j]<<std::endl;
-        // }
 
         if (n>0)
         {
@@ -439,45 +387,13 @@ SF2 HeighField::StreamArea() const{
 
     SF2 stream = SF2(Grid2(Box2(a,b),nx,ny),1.0);
 
-    // SF2 stream = SF2(Grid2(*this));
-
-    // for (int i = 0; i < nx; i++){
-    //     for (int j = 0; j < ny; j++){
-    //         stream.at(i,j) = 1.0;
-    //     }
-    // }
-    // stream.at(2,2) = 0.01;
-
     QVector<ScalarPoint2> QEE = GetScalarPoints();
 
-    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
-    // for (int i = QEE.size() -1; i>=0; i--){
-    //     std::cout<<QEE.at(i).Scalar()<<std::endl;
-    //     //stream.at(q[k].x(), q[k].y()) += sp;
-    // }
-    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
-    
-    // QVector<ScalarPoint2> QEE = QVector(ScalarPoint2(next,length))
     std::sort(QEE.begin(), QEE.end());
-
-    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
-    // for (int i = QEE.size() -1; i>=0; i--){
-    //     std::cout<<QEE.at(i).Scalar()<<std::endl;
-    //     //stream.at(q[k].x(), q[k].y()) += sp;
-    // }
-    // std::cout<<"QEE.at(i).Scalar()"<<std::endl;
 
     for (int i = QEE.size() -1; i>=0; i--){
         
-        // QPoint q = QPoint(2,2);
-        // double z = 5;
-        // ScalarPoint2 p = ScalarPoint2(q,z);
-        // p.Point(); 
-        //QEE.at(i).Point();
         QPoint p = QEE.at(i).Point();
-
-
-        
 
         QPoint q[8];
         double h[8];
@@ -487,14 +403,6 @@ SF2 HeighField::StreamArea() const{
 
         int n = CheckFlowSlope(p,q,h,s,sn,m);
 
-        // std::cout<<"p "<<p.x()<<" , "<<p.y()<<std::endl;
-        // for (int j=0; j<8; j++){
-        //     std::cout<<"q "<<j<<" "<<q[j].x()<<" "<<q[j].y()<<std::endl;
-        //     std::cout<<"h "<<j<<" "<<h[j]<<std::endl;
-        //     std::cout<<"s "<<j<<" "<<s[j]<<std::endl;
-        //     std::cout<<"sn "<<j<<" "<<sn[j]<<std::endl;
-        // }
-        // std::cout<<"N "<<n<<std::endl;
         if (n>0)
         {
             const double sp = stream.at(p.x(),p.y());
@@ -502,20 +410,11 @@ SF2 HeighField::StreamArea() const{
             for (int k=0; k<n;k++)
             {
                 stream.at(q[k].x(), q[k].y()) += sp * sn[k];
-                //std::cout<<"sn "<<k<<" "<<sn[k]<<std::endl;
-
-
             }
-            
-
         }
-
     }
     return stream;
 };
-
-
-
 
 
 
@@ -667,31 +566,9 @@ SF2 HeighField::raw_dart_throwing(Arbre& arbre, bool quicker, bool dil) const{
     // std::cout<<rayon_arbre<<std::endl;
     // std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
     
-
     SF2 res = SF2(Grid2(Box2(a,b),nx,ny),0.0); //init 0
 
     std::vector< std::pair< std::pair<int,int> , int > >  list_arbre;
-
-    // for (int k=0; k<100000; k++){
-    //     int rand_pos_x = rand()%nx;
-    //     int rand_pos_y = rand()%ny;
-
-
-    //     bool placement_not_possible = false;
-
-
-    //     for (std::vector< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
-    //         if ( test_dist( std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre) , *it ) ){
-    //             placement_not_possible = true;
-    //             break;
-    //         }
-    //     }
-
-
-    //     if (placement_not_possible == false){
-    //         list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre));
-    //     }
-    // }
 
     if (quicker){
         list_arbre = make_dart_throwing_quicker(arbre);
@@ -701,34 +578,12 @@ SF2 HeighField::raw_dart_throwing(Arbre& arbre, bool quicker, bool dil) const{
 
 
     for (std::vector< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
-        
-
+    
         bool test_dens_sapin = true;
-
-
-        // float rand_test = ((double) rand() / (RAND_MAX));
         int rand_pos_x = (*it).first.first;
         int rand_pos_y = (*it).first.second;
 
-        // if (rand_test <= dens_arbre.at(rand_pos_x,rand_pos_y)){
-        //     test_dens_sapin=true;
-        // }
-        // else{
-        //     continue;
-        // }
-
-        //if (test_dens_sapin == true){
         res.at(rand_pos_x, rand_pos_y) = 1;
-        // res.at(rand_pos_x+2, rand_pos_y) = 1;
-        // res.at(rand_pos_x-2, rand_pos_y) = 1;
-        // res.at(rand_pos_x, rand_pos_y+2) = 1;
-        // res.at(rand_pos_x, rand_pos_y-2) = 1;
-        // res.at(rand_pos_x+1, rand_pos_y) = 1;
-        // res.at(rand_pos_x-1, rand_pos_y) = 1;
-        // res.at(rand_pos_x, rand_pos_y+1) = 1;
-        // res.at(rand_pos_x, rand_pos_y-1) = 1;
-        //}
-
 
     }
     if(dil){
@@ -773,27 +628,6 @@ SF2 HeighField::raw_distribution(Arbre& arbre, bool quicker, bool dil) const{
 
     std::cout<<"Temps Dart Throwing : "<<time<<" ms"<<std::endl;
     
-    // for (int k=0; k<100000; k++){
-    //     int rand_pos_x = rand()%nx;
-    //     int rand_pos_y = rand()%ny;
-
-
-    //     bool placement_not_possible = false;
-
-
-    //     for (std::vector< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
-    //         if ( test_dist( std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre) , *it ) ){
-    //             placement_not_possible = true;
-    //             break;
-    //         }
-    //     }
-
-
-    //     if (placement_not_possible == false){
-    //         list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre));
-    //     }
-    // }
-
     for (std::vector< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
         
 
@@ -813,14 +647,6 @@ SF2 HeighField::raw_distribution(Arbre& arbre, bool quicker, bool dil) const{
 
         if (test_dens_sapin == true){
             res.at(rand_pos_x, rand_pos_y) = 1;
-            // res.at(rand_pos_x+2, rand_pos_y) = 1;
-            // res.at(rand_pos_x-2, rand_pos_y) = 1;
-            // res.at(rand_pos_x, rand_pos_y+2) = 1;
-            // res.at(rand_pos_x, rand_pos_y-2) = 1;
-            // res.at(rand_pos_x+1, rand_pos_y) = 1;
-            // res.at(rand_pos_x-1, rand_pos_y) = 1;
-            // res.at(rand_pos_x, rand_pos_y+1) = 1;
-            // res.at(rand_pos_x, rand_pos_y-1) = 1;
         }
 
 
@@ -904,14 +730,6 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 
         if (test_dens_arbre1 == true){
             res.at(rand_pos_x, rand_pos_y) = 1;
-            // res.at(rand_pos_x+2, rand_pos_y) = 1;
-            // res.at(rand_pos_x-2, rand_pos_y) = 1;
-            // res.at(rand_pos_x, rand_pos_y+2) = 1;
-            // res.at(rand_pos_x, rand_pos_y-2) = 1;
-            // res.at(rand_pos_x+1, rand_pos_y) = 1;
-            // res.at(rand_pos_x-1, rand_pos_y) = 1;
-            // res.at(rand_pos_x, rand_pos_y+1) = 1;
-            // res.at(rand_pos_x, rand_pos_y-1) = 1;
         }
 
     }
@@ -955,14 +773,6 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 
         if (test_dens_arbre2 == true){
             res.at(rand_pos_x, rand_pos_y) = 0.5;
-            // res.at(rand_pos_x+2, rand_pos_y+2) = 1;
-            // res.at(rand_pos_x-2, rand_pos_y-2) = 1;
-            // res.at(rand_pos_x-2, rand_pos_y+2) = 1;
-            // res.at(rand_pos_x+2, rand_pos_y-2) = 1;
-            // res.at(rand_pos_x+1, rand_pos_y+1) = 1;
-            // res.at(rand_pos_x-1, rand_pos_y-1) = 1;
-            // res.at(rand_pos_x-1, rand_pos_y+1) = 1;
-            // res.at(rand_pos_x-1, rand_pos_y-1) = 1;
         }
 
     }

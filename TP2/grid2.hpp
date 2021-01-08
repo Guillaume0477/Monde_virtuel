@@ -32,9 +32,6 @@ public:
 
     int Index(int i, int j) const { return i + j * nx; }
 
-    // const QPoint next[8] = { QPoint (1,0) ,QPoint (1,1) ,QPoint (0,1) ,QPoint (-1,1) ,QPoint (0,-1) ,QPoint (-1,-1) ,QPoint (-1,0), QPoint (1,-1) };
-    // const double length[8] = {1.0 , sqrt(2.0),1.0 , sqrt(2.0),1.0 , sqrt(2.0),1.0 , sqrt(2.0)};
-
     vec2 Vertex(int i, int j) const
     {
         double u = double(i) / (nx - 1);

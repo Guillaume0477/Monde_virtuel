@@ -32,13 +32,6 @@ void LayeredField::TermalErosion(int nbEpoch){
                 int ibis = i - rGrad[0];
                 int jbis = j - rGrad[1];
                 
-                // std::cout <<"ij " << i << ' ' << j << std::endl;
-                // std::cout << ibis << ' ' << jbis << std::endl;
-                // std::cout << "Slope : " << s << std::endl;
-                // std::cout << "FactNoK : " << s-tanTheta << std::endl;
-                // std::cout << "Fact :" << k*(s-tanTheta) << std::endl;
-                // std::cout << "Transfer : " << k*(s-tanTheta)*sand.at(i,j) << std::endl;
-                // std::cout << "Sand : " << sand.at(i,j) << std::endl;
                 if ((ibis > 0) && (jbis > 0) && (ibis < nx) && (jbis < ny)){
                     sand.at(ibis,jbis) += std::min(sand.at(i,j), k*(s-tanTheta)*sand.at(i,j));
                 }
