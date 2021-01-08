@@ -1663,7 +1663,7 @@ class VectorField2;
 
 
 void Compute_params( HeighField hf, QString s){
-    bool quicker = false;
+    bool quicker = true;
 
     Sapin sapin = Sapin();
     Buisson buisson = Buisson();
@@ -1752,7 +1752,7 @@ void Compute_params( HeighField hf, QString s){
 
     std::cout << "Combinaison sapins et buissons" << std::endl;
     SF2 DOUBLE_DISTRI = hf.double_raw_distribution_quicker(sapin4,buisson4, quicker);
-    hf.Normalize();
+    //hf.Normalize();
     QImage double_raw_distribution = hf.ExportColored(DOUBLE_DISTRI,2,true);
     double_raw_distribution.save("Images/double_raw_distribution"+s+".png");
 
@@ -1818,7 +1818,7 @@ int main (int argc, char *argv[]){
 
     QImage im;
     //im.load("heightmap3.png");
-    im.load("ImagesToTest/im500x500.jpeg");
+    im.load("ImagesToTest/im100x100.png");
     //im.load("montagne.png");
     //im.load("best.png");
 

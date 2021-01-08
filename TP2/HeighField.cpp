@@ -3,6 +3,8 @@
 
 QImage HeighField::ExportColored(SF2 mapToExport, int nbColors, bool vis) const
 {
+    SF2 height = (SF2) *this;
+    height.Normalize();
 
     QImage image(nx,ny, QImage::Format_ARGB32);
 
@@ -14,7 +16,8 @@ QImage HeighField::ExportColored(SF2 mapToExport, int nbColors, bool vis) const
         for (int j=0; j <ny; j++)
         {
             float value = mapToExport.at(i,j);
-            int mapVal = (at(i,j)*255);
+
+            int mapVal = (height.at(i,j)*255);
             if (vis){
                 vec3 n = Normal(i,j);
                 double d =n*lightdir;
