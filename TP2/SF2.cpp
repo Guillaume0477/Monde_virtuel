@@ -216,7 +216,7 @@ void SF2::Dilate(int rayon, double value){
 
     std::vector<double> fieldMem;
     fieldMem.resize(field.size());
-    int ray = sqrt(2)*rayon;
+    int ray = 2*rayon;
     if (ray%2 == 0){
         ray+=1;
     }
@@ -229,9 +229,16 @@ void SF2::Dilate(int rayon, double value){
 
                     a = i - floor(ray/2) + floor(k/(ray));
                     b = j - floor(ray/2) + k%(ray);
+                    
+                    int diff_x = i-a;
+                    int diff_y = j-b;
+                    float dist = std::sqrt( diff_x*diff_x + diff_y*diff_y );
+  
 
-                    if ((a >= 0) && (b >= 0) && (a < nx) && (b < ny)){
-                        fieldMem[Index(a,b)] = at(i,j);
+                    if (dist<rayon){
+                        if ((a >= 0) && (b >= 0) && (a < nx) && (b < ny)){
+                            fieldMem[Index(a,b)] = at(i,j);
+                        }
                     }
                 }
             } else if (fieldMem[Index(i,j)] != value){

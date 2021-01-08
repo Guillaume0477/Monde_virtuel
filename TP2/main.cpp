@@ -1696,6 +1696,9 @@ void Compute_params( HeighField hf, QString s){
     SF2 DISTRI_SAPIN = hf.raw_distribution(sapin2);
     SF2 DOUBLE_DISTRI = hf.double_raw_distribution_quicker(sapin4,buisson4);
 
+    // SF2 DOUBLE_DISTRI =  hf.double_raw_distribution(sapin4,buisson4);// hf.double_raw_distribution_quicker(sapin4,buisson4);
+
+
     std::cout<<"sthrowsthrowsthrowsthrowsthrowsthrowsthrow"<<std::endl;
 
     SF2 THROW_SAPIN = hf.raw_dart_throwing(sapin3);
@@ -1785,11 +1788,12 @@ int main (int argc, char *argv[]){
     //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
 
     QImage im;
-    im.load("heightmap3.png");
     //im.load("heightmap3.png");
+    im.load("heightmap3.jpeg");
+    //im.load("montagne.png");
     //im.load("best.png");
 
-    HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(500,500)), im.width(), im.height(), 500.0);
+    HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(im.width(),im.height())), im.width(), im.height(), 100.0);
     // SF2 pente = hf.SlopeMap();
     // pente.UpdateMinMax();
 

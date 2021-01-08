@@ -13,7 +13,7 @@ protected:
 
 public:
     Sapin(){
-        rayon = 6;
+        rayon = 10;
         nombre_attrib = 3;
     };
     double get_rayon() const {

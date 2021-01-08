@@ -42,7 +42,7 @@ void LayeredField::TermalErosion(int nbEpoch){
                 if ((ibis > 0) && (jbis > 0) && (ibis < nx) && (jbis < ny)){
                     sand.at(ibis,jbis) += std::min(sand.at(i,j), k*(s-tanTheta)*sand.at(i,j));
                 }
-            
+
                 sand.at(i,j) -= std::min(sand.at(i,j), k*(s-tanTheta)*sand.at(i,j));
             }
         }
