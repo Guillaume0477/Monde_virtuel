@@ -1663,7 +1663,7 @@ class VectorField2;
 
 
 void Compute_params( HeighField hf, QString s){
-    bool quicker = true;
+    bool quicker = false;
 
     Sapin sapin = Sapin();
     Buisson buisson = Buisson();
@@ -1817,7 +1817,7 @@ int main (int argc, char *argv[]){
 
     QImage im;
     //im.load("heightmap3.png");
-    im.load("../ImagesToTest/im1000x1000.png");
+    im.load("../ImagesToTest/im500x500.jpeg");
     //im.load("montagne.png");
     //im.load("best.png");
 
