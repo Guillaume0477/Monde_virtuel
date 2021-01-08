@@ -1663,18 +1663,7 @@ class VectorField2;
 
 
 void Compute_params( HeighField hf, QString s){
-
     bool quicker = true;
-
-    // SF2 GRAD = hf.GradientNorm();
-    // SF2 LAP = hf.LaplacianMap();
-    SF2 SLOPE = hf.SlopeMap();
-    // SF2 AVSLOPE = hf.AVGSlopeMap();
-    SF2 ACCESS = hf.accessMap();
-    // SF2 AreaStreepest = hf.StreamAreaStreepest();
-    // SF2 Area = hf.StreamArea();
-    // SF2 Power = hf.StreamPower();
-    SF2 WET = hf.WetNessIndex();
 
     Sapin sapin = Sapin();
     Buisson buisson = Buisson();
@@ -1687,88 +1676,125 @@ void Compute_params( HeighField hf, QString s){
     Sapin sapin5 = Sapin();
     Buisson buisson5 = Buisson();
 
-    std::cout<<"densdensdensdensdensdensdensdensdensdens"<<std::endl;
+
+
+    // std::cout << "Enregistrement du terrain" << std::endl;
+    
+    // std::cout << "Hauteurs" << std::endl;
+    // QImage hauteur = hf.Export(hf);
+    // hauteur.save("Images/hauteur"+s+".png");
+
+    // std::cout << "Hauteurs Phong" << std::endl;
+    // QImage hauteur_phong = hf.Shade(hf);
+    // hauteur_phong.save("Images/hauteur_phong"+s+".png");
 
 
 
-    std::cout<<"distridistridistridistridistridistridistri"<<std::endl;
+    std::cout<<"Calculs pour affichage des propriétés de terrain"<<std::endl;
+    
+    // std::cout<<"Gradient"<<std::endl;
+    // SF2 GRAD = hf.GradientNorm();
+    // QImage gradient = hf.Export(GRAD);
+    // gradient.save("Images/gradient"+s+".png");
+
+    // std::cout << "Laplacien" << std::endl;
+    // SF2 LAP = hf.LaplacianMap();
+    // QImage laplacian = hf.Export(LAP);
+    // laplacian.save("Images/lapla"+s+".png");
+
+    std::cout << "Pente" << std::endl;
+    SF2 SLOPE = hf.SlopeMap();
+    QImage slope = hf.Export(SLOPE);
+    slope.save("Images/slope"+s+".png");
+
+    // std::cout << "Pente Moyenne" << std::endl;
+    // SF2 AVSLOPE = hf.AVGSlopeMap();
+    // QImage avslope = hf.Export(AVSLOPE);
+    // avslope.save("Images/avslope"+s+".png");
+
+    std::cout << "Accessibilite" << std::endl;
+    SF2 ACCESS = hf.accessMap();
+    QImage acc = hf.Export(ACCESS);
+    acc.save("Images/access" + s + ".png");
+
+    // std::cout << "Stream Area Streepest" << std::endl;
+    // SF2 AreaStreepest = hf.StreamAreaStreepest();
+    // QImage StreamAreaStreepest = hf.Export(AreaStreepest);
+    // StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
+
+    // std::cout << "Stream Area" << std::endl;
+    // SF2 Area = hf.StreamArea();
+    // QImage StreamArea = hf.Export(Area);
+    // StreamArea.save("Images/StreamArea"+s+".png");
+
+    // std::cout << "Stream Power" << std::endl;
+    // SF2 Power = hf.StreamPower();
+    // QImage StreamPower = hf.Export(Power);
+    // StreamPower.save("Images/StreamPower"+s+".png");
+
+    std::cout << "Wetness Index" << std::endl;
+    SF2 WET = hf.WetNessIndex();
+    QImage WetNessIndex = hf.Export(WET);
+    WetNessIndex.save("Images/WetNessIndex"+s+".png");
 
 
-    SF2 DISTRI_BUISSON = hf.raw_distribution(buisson2, quicker);
-    SF2 DISTRI_SAPIN = hf.raw_distribution(sapin2, quicker);
+    std::cout<<"Calculs pour affichage des distributions"<<std::endl;
+    
+    // std::cout<<"Buissons"<<std::endl;
+    // SF2 DISTRI_BUISSON = hf.raw_distribution(buisson2, quicker);
+    // QImage buisson_raw_distribution = hf.Export(DISTRI_BUISSON);
+    // buisson_raw_distribution.save("Images/buisson_raw_distribution"+s+".png");
+
+    // std::cout <<"Sapins" << std::endl;
+    // SF2 DISTRI_SAPIN = hf.raw_distribution(sapin2, quicker);
+    // QImage sapin_raw_distribution = hf.Export(DISTRI_SAPIN);
+    // sapin_raw_distribution.save("Images/sapin_raw_distribution"+s+".png");
+
+    std::cout << "Combinaison sapins et buissons" << std::endl;
     SF2 DOUBLE_DISTRI = hf.double_raw_distribution_quicker(sapin4,buisson4, quicker);
+    QImage double_raw_distribution = hf.ExportColored(DOUBLE_DISTRI,2);
+    double_raw_distribution.save("Images/double_raw_distribution"+s+".png");
 
+    // Ancienne version de la double distribution
     // SF2 DOUBLE_DISTRI =  hf.double_raw_distribution(sapin4,buisson4);// hf.double_raw_distribution_quicker(sapin4,buisson4);
 
 
-    std::cout<<"sthrowsthrowsthrowsthrowsthrowsthrowsthrow"<<std::endl;
+    // std::cout<<"Calcul pour affichage du lancer de fléchettes"<<std::endl;
+    
+    // std::cout << "Sapins" << std::endl;
+    // SF2 THROW_SAPIN = hf.raw_dart_throwing(sapin3, quicker);
+    // QImage raw_throw_sapin = hf.Export(THROW_SAPIN);
+    // raw_throw_sapin.save("Images/throw_sapin"+s+".png");
 
-    SF2 THROW_SAPIN = hf.raw_dart_throwing(sapin3, quicker);
-    SF2 THROW_BUISSON = hf.raw_dart_throwing(buisson3, quicker);
+    // std::cout << "Buissons" << std::endl;
+    // SF2 THROW_BUISSON = hf.raw_dart_throwing(buisson3, quicker);
+    // QImage raw_throw_buisson = hf.Export(THROW_BUISSON);
+    // raw_throw_buisson.save("Images/throw_buisson"+s+".png");
 
+    // std::cout<<"Calculs pour affichage des densités"<<std::endl;
+    
+    // std::cout << "Sapins" << std::endl;
+    // SF2 SAPIN = hf.densite_arbre(sapin);
+    // QImage densite_sapin = hf.Export(SAPIN);
+    // densite_sapin.save("Images/densite_sapin"+s+".png");
 
-    std::cout<<"endsthrowsthrowsthrowsthrowsthrowsthrowsthrow"<<std::endl;
+    // // // Tests
+    // // SF2 SAPIN_BUG = hf.densite_arbre(sapin5);
+    // // QImage densite_sapin_bug = hf.Export(SAPIN_BUG);
+    // // densite_sapin_bug.save("Images/densite_sapin_bug"+s+".png");
 
-    SF2 SAPIN = hf.densite_arbre(sapin);
-    //SF2 SAPIN_BUG = hf.densite_arbre(sapin5);
-    //SF2 BUISSON = hf.densite_arbre(buisson);
-    SF2 BUISSON = hf.densite_arbre(buisson);
-    //SF2 BUISSON_BUG = hf.densite_arbre(buisson5);
-    // QImage hauteur_phong = hf.Shade(hf);
-    // QImage hauteur = hf.Export(hf);
-    // QImage gradient = hf.Export(GRAD);
-    // QImage laplacian = hf.Export(LAP);
-    QImage slope = hf.Export(SLOPE);
-    // QImage avslope = hf.Export(AVSLOPE);
-    QImage acc = hf.Export(ACCESS);
-    // QImage StreamAreaStreepest = hf.Export(AreaStreepest);
-    // QImage StreamArea = hf.Export(Area);
-    // QImage StreamPower = hf.Export(Power);
-    QImage WetNessIndex = hf.Export(WET);
-    QImage densite_sapin = hf.Export(SAPIN);
-    //QImage densite_sapin_bug = hf.Export(SAPIN_BUG);
-    QImage raw_throw_sapin = hf.Export(THROW_SAPIN);
-    QImage sapin_raw_distribution = hf.Export(DISTRI_SAPIN);
+    // std::cout << "Buissons" << std::endl;
+    // SF2 BUISSON = hf.densite_arbre(buisson);
+    // QImage densite_buisson = hf.Export(BUISSON);
+    // densite_buisson.save("Images/densite_buisson"+s+".png");
 
-    QImage densite_buisson = hf.Export(BUISSON);
-    //QImage densite_buisson_bug = hf.Export(BUISSON_BUG);
-    QImage raw_throw_buisson = hf.Export(THROW_BUISSON);
-    QImage buisson_raw_distribution = hf.Export(DISTRI_BUISSON);
-    QImage double_raw_distribution = hf.ExportColored(DOUBLE_DISTRI,2);
-
+    // // // Tests
+    // // SF2 BUISSON_BUG = hf.densite_arbre(buisson5);
+    // // QImage densite_buisson_bug = hf.Export(BUISSON_BUG);
+    // // densite_buisson_bug.save("Images/densite_buisson_bug"+s+".png");
 
 
 
-    // //std::cout <<" hauteur_phong "<<s<< std::endl;
-    // hauteur_phong.save("Images/hauteur_phong"+s+".png");
-    // //std::cout <<" hauteur "<<s<< std::endl;
-    // hauteur.save("Images/hauteur"+s+".png");
-    // //std::cout <<" gradient "<<s<< std::endl;
-    // gradient.save("Images/gradient"+s+".png");
-    // //std::cout <<" laplacian "<<s<< std::endl;
-    // laplacian.save("Images/lapla"+s+".png");
-    // //std::cout <<" slope "<<s<< std::endl;
-    slope.save("Images/slope"+s+".png");
-    // //std::cout <<" avslope "<<s<< std::endl;
-    // avslope.save("Images/avslope"+s+".png");
-
-    acc.save("Images/access" + s + ".png");
-
-    // StreamAreaStreepest.save("Images/StreamAreaStreepest"+s+".png");
-    // StreamArea.save("Images/StreamArea"+s+".png");
-    // StreamPower.save("Images/StreamPower"+s+".png");
-    WetNessIndex.save("Images/WetNessIndex"+s+".png");
-    densite_sapin.save("Images/densite_sapin"+s+".png");
-    //densite_sapin_bug.save("Images/densite_sapin_bug"+s+".png");
-    densite_buisson.save("Images/densite_buisson"+s+".png");
-    //densite_buisson_bug.save("Images/densite_buisson_bug"+s+".png");
-
-    raw_throw_sapin.save("Images/throw_sapin"+s+".png");
-    raw_throw_buisson.save("Images/throw_buisson"+s+".png");
-
-    sapin_raw_distribution.save("Images/sapin_raw_distribution"+s+".png");
-    buisson_raw_distribution.save("Images/buisson_raw_distribution"+s+".png");
-    double_raw_distribution.save("Images/double_raw_distribution"+s+".png");
 
 
 }
@@ -1791,7 +1817,7 @@ int main (int argc, char *argv[]){
 
     QImage im;
     //im.load("heightmap3.png");
-    im.load("heightmap3.png");
+    im.load("../ImagesToTest/im1000x1000.png");
     //im.load("montagne.png");
     //im.load("best.png");
 

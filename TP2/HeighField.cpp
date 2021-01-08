@@ -564,11 +564,9 @@ std::vector< std::pair< std::pair<int,int> , int > > HeighField::make_dart_throw
 
 std::vector< std::pair< std::pair<int,int> , int > > HeighField::make_dart_throwing_quicker(Arbre& arbre) const{
 
-
     int rayon_arbre = arbre.get_rayon();
-    std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
+    std::cout<<"Rayon de l'arbre considere"<<std::endl;
     std::cout<<rayon_arbre<<std::endl;
-    std::cout<<"rayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbrerayon_arbre"<<std::endl;
     
     std::vector< std::pair< std::pair<int,int> , int > >  list_arbre;
 
@@ -604,34 +602,12 @@ std::vector< std::pair< std::pair<int,int> , int > > HeighField::make_dart_throw
 
                 }
             }
-            // std::cout << x << ' ' << y << std::endl;
 
             list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(x,y),arbre.get_rayon()));
 
         }
     }
-    std::cout << "pilou" << std::endl;
 
-    // for (int k=0; k<100000; k++){
-    //     int rand_pos_x = rand()%nx;
-    //     int rand_pos_y = rand()%ny;
-
-
-    //     bool placement_not_possible = false;
-
-
-    //     for (std::vector< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
-    //         if ( test_dist( std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre) , *it ) ){
-    //             placement_not_possible = true;
-    //             break;
-    //         }
-    //     }
-
-
-    //     if (placement_not_possible == false){
-    //         list_arbre.push_back(std::pair<std::pair<int,int>,int>(std::pair<int,int>(rand_pos_x,rand_pos_y), rayon_arbre));
-    //     }
-    // }
     return list_arbre;
 };
 
@@ -722,7 +698,7 @@ SF2 HeighField::raw_dart_throwing(Arbre& arbre, bool quicker, bool dil) const{
 
 SF2 HeighField::raw_distribution(Arbre& arbre, bool quicker, bool dil) const{
 
-    
+    std::chrono::high_resolution_clock::time_point tstart= std::chrono::high_resolution_clock::now();
     SF2 dens_arbre = densite_arbre(arbre);
     dens_arbre.Normalize();
 
@@ -809,6 +785,11 @@ SF2 HeighField::raw_distribution(Arbre& arbre, bool quicker, bool dil) const{
         res.Dilate(arbre.get_rayon(), res.max());
 
     }
+    
+    std::chrono::high_resolution_clock::time_point tend= std::chrono::high_resolution_clock::now();
+    unsigned int timeTot= std::chrono::duration_cast<std::chrono::microseconds>(tend - tstart).count();
+
+    std::cout<<"Temps de calcul de distribution total : "<<timeTot<<" ms"<<std::endl;
     
     return res;
 };
@@ -950,7 +931,9 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 
 SF2 HeighField::double_raw_distribution_quicker(Arbre& arbre1, Arbre& arbre2, bool quicker) const{
 
+    std::cout << "Distribution de l'arbre 1" << std::endl;
     SF2 sapinDist = raw_distribution(arbre1, quicker, false);
+    std::cout << "Distribution de l'arbre 2" << std::endl;
     SF2 buissonDist = raw_distribution(arbre2, quicker, false);
 
     SF2 avoidArea = sapinDist;
