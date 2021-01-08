@@ -572,7 +572,7 @@ std::vector< std::pair< std::pair<int,int> , int > > HeighField::make_dart_throw
     
     std::vector< std::pair< std::pair<int,int> , int > >  list_arbre;
 
-    int val = arbre.get_rayon()*2 +2;
+    int val = arbre.get_rayon()*3;
     int nbx = int(nx/val);
 
     int nby = int(ny/val);
@@ -635,7 +635,7 @@ std::vector< std::pair< std::pair<int,int> , int > > HeighField::make_dart_throw
     return list_arbre;
 };
 
-SF2 HeighField::raw_dart_throwing(Arbre& arbre, bool dil) const{
+SF2 HeighField::raw_dart_throwing(Arbre& arbre, bool quicker, bool dil) const{
 
     
     SF2 dens_arbre = densite_arbre(arbre);
@@ -672,7 +672,12 @@ SF2 HeighField::raw_dart_throwing(Arbre& arbre, bool dil) const{
     //     }
     // }
 
-    list_arbre = make_dart_throwing_quicker(arbre);
+    if (quicker){
+        list_arbre = make_dart_throwing_quicker(arbre);
+    } else {
+        list_arbre = make_dart_throwing(arbre);
+    }
+
 
     for (std::vector< std::pair< std::pair<int,int> , int > >::iterator it = list_arbre.begin(); it != list_arbre.end(); it++){
         
@@ -715,7 +720,7 @@ SF2 HeighField::raw_dart_throwing(Arbre& arbre, bool dil) const{
 
 
 
-SF2 HeighField::raw_distribution(Arbre& arbre, bool dil) const{
+SF2 HeighField::raw_distribution(Arbre& arbre, bool quicker, bool dil) const{
 
     
     SF2 dens_arbre = densite_arbre(arbre);
@@ -734,8 +739,11 @@ SF2 HeighField::raw_distribution(Arbre& arbre, bool dil) const{
 
     std::chrono::high_resolution_clock::time_point a= std::chrono::high_resolution_clock::now();
     
-    list_arbre = make_dart_throwing_quicker(arbre);
-
+    if (quicker){
+        list_arbre = make_dart_throwing_quicker(arbre);
+    } else {
+        list_arbre = make_dart_throwing(arbre);
+    }
  
     std::chrono::high_resolution_clock::time_point b= std::chrono::high_resolution_clock::now();
     
@@ -940,10 +948,10 @@ SF2 HeighField::double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const{
 }
 
 
-SF2 HeighField::double_raw_distribution_quicker(Arbre& arbre1, Arbre& arbre2) const{
+SF2 HeighField::double_raw_distribution_quicker(Arbre& arbre1, Arbre& arbre2, bool quicker) const{
 
-    SF2 sapinDist = raw_distribution(arbre1, false);
-    SF2 buissonDist = raw_distribution(arbre2, false);
+    SF2 sapinDist = raw_distribution(arbre1, quicker, false);
+    SF2 buissonDist = raw_distribution(arbre2, quicker, false);
 
     SF2 avoidArea = sapinDist;
     avoidArea.Dilate(arbre1.get_rayon()+arbre2.get_rayon(), 1.0);

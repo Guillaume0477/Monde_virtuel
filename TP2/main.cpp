@@ -1664,6 +1664,8 @@ class VectorField2;
 
 void Compute_params( HeighField hf, QString s){
 
+    bool quicker = true;
+
     // SF2 GRAD = hf.GradientNorm();
     // SF2 LAP = hf.LaplacianMap();
     SF2 SLOPE = hf.SlopeMap();
@@ -1692,17 +1694,17 @@ void Compute_params( HeighField hf, QString s){
     std::cout<<"distridistridistridistridistridistridistri"<<std::endl;
 
 
-    SF2 DISTRI_BUISSON = hf.raw_distribution(buisson2);
-    SF2 DISTRI_SAPIN = hf.raw_distribution(sapin2);
-    SF2 DOUBLE_DISTRI = hf.double_raw_distribution_quicker(sapin4,buisson4);
+    SF2 DISTRI_BUISSON = hf.raw_distribution(buisson2, quicker);
+    SF2 DISTRI_SAPIN = hf.raw_distribution(sapin2, quicker);
+    SF2 DOUBLE_DISTRI = hf.double_raw_distribution_quicker(sapin4,buisson4, quicker);
 
     // SF2 DOUBLE_DISTRI =  hf.double_raw_distribution(sapin4,buisson4);// hf.double_raw_distribution_quicker(sapin4,buisson4);
 
 
     std::cout<<"sthrowsthrowsthrowsthrowsthrowsthrowsthrow"<<std::endl;
 
-    SF2 THROW_SAPIN = hf.raw_dart_throwing(sapin3);
-    SF2 THROW_BUISSON = hf.raw_dart_throwing(buisson3);
+    SF2 THROW_SAPIN = hf.raw_dart_throwing(sapin3, quicker);
+    SF2 THROW_BUISSON = hf.raw_dart_throwing(buisson3, quicker);
 
 
     std::cout<<"endsthrowsthrowsthrowsthrowsthrowsthrowsthrow"<<std::endl;
@@ -1789,7 +1791,7 @@ int main (int argc, char *argv[]){
 
     QImage im;
     //im.load("heightmap3.png");
-    im.load("heightmap3.jpeg");
+    im.load("heightmap3.png");
     //im.load("montagne.png");
     //im.load("best.png");
 

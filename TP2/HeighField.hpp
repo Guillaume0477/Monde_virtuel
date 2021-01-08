@@ -82,10 +82,10 @@ public:
     std::vector< std::pair< std::pair<int,int> , int > > make_dart_throwing(Arbre& arbre) const;
     std::vector< std::pair< std::pair<int,int> , int > > make_dart_throwing_quicker(Arbre& arbre) const;
     
-    SF2 raw_dart_throwing(Arbre& , bool = true) const;
-    SF2 raw_distribution(Arbre& , bool = true) const;
+    SF2 raw_dart_throwing(Arbre& , bool, bool = true) const;
+    SF2 raw_distribution(Arbre& , bool, bool = true) const;
     SF2 double_raw_distribution(Arbre& arbre1, Arbre& arbre2) const;
-    SF2 double_raw_distribution_quicker(Arbre& arbre1, Arbre& arbre2) const;
+    SF2 double_raw_distribution_quicker(Arbre& arbre1, Arbre& arbre2, bool) const;
 
     //Exportation sous format d'image ! 
     QImage Export(SF2, bool = false) const;
