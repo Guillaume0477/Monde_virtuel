@@ -56,5 +56,5 @@ void main()
     float Is= Ks * pow(dot(s,t),1);
 
     vec4 c = texture( textureSampler, uv_obj_toUse );
-    color = (Ia + Id)*c;// + Is ;
+    color = c;//(Ia + Id)*c;// + Is ;
 };

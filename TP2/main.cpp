@@ -1817,9 +1817,10 @@ int main (int argc, char *argv[]){
     //std::cout << normalized[0] << normalized[1] << normalized[2] << std::endl;
 
     QImage im;
-    //im.load("heightmap3.png");
-    im.load("ImagesToTest/im100x100.png");
-    //im.load("montagne.png");
+
+    //im.load("heightmap3.jpeg");
+    //im.load("ImagesToTest/im500x500.jpeg");
+    im.load("montagne.png");
     //im.load("best.png");
 
     HeighField hf = HeighField(im, Box2(vec2(0,0), vec2(im.width(),im.height())), im.width(), im.height(), 100.0);
